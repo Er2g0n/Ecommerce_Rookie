@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Version 17
+VisualStudioVersion = 17.12.35527.113
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "API_Services", "API_Services", "{7F88E1A0-6C00-4E83-911C-E2BFED773D9C}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Infrastructure", "Infrastructure", "{63ED5B0A-DBCE-4291-AEF7-81E3E10E0465}"
+EndProject
+Project("{2150E333-8FDC-42A3-9474-1A3956D46DE8}") = "Frontend", "Frontend", "{E4AE0576-79E9-4784-8529-BE6AD3BDC941}"
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Nash_ApplicationAPI", "Nash_ApplicationAPI\Nash_ApplicationAPI.csproj", "{A62A7353-EAB2-47C7-8ACD-39ECCB8035B6}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{A62A7353-EAB2-47C7-8ACD-39ECCB8035B6}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{A62A7353-EAB2-47C7-8ACD-39ECCB8035B6}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{A62A7353-EAB2-47C7-8ACD-39ECCB8035B6}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{A62A7353-EAB2-47C7-8ACD-39ECCB8035B6}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+	GlobalSection(NestedProjects) = preSolution
+		{A62A7353-EAB2-47C7-8ACD-39ECCB8035B6} = {7F88E1A0-6C00-4E83-911C-E2BFED773D9C}
+	EndGlobalSection
+EndGlobal

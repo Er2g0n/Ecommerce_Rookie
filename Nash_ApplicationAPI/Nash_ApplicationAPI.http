@@ -1,0 +1,6 @@
+@Nash_ApplicationAPI_HostAddress = http://localhost:5199
+
+GET {{Nash_ApplicationAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
