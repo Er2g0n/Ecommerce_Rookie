@@ -1,4 +1,12 @@
-﻿using System;
+﻿using Dapper;
+using Microsoft.Data.SqlClient;
+using Microsoft.EntityFrameworkCore;
+using Structure_Base;
+using Structure_Base.BaseService;
+using Structure_Context;
+using Structure_Core;
+using Structure_Core.BaseClass;
+using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
