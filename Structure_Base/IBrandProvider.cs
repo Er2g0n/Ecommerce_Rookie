@@ -1,4 +1,6 @@
-﻿using System;
+﻿using Structure_Core;
+using Structure_Core.BaseClass;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
