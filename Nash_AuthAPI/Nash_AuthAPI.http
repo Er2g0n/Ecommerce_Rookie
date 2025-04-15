@@ -1,0 +1,6 @@
+@Nash_AuthAPI_HostAddress = http://localhost:5216
+
+GET {{Nash_AuthAPI_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
