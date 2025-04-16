@@ -37,7 +37,8 @@ builder.Services.AddTransient<DB_Ecommerce_Rookie_Context>();
 #region DI
 builder.Services.AddTransient<IBrandProvider, BrandProvider>();
 builder.Services.AddTransient<ICRUD_Service<Brand, int>, BrandProvider>();
-
+builder.Services.AddTransient<IProductCategoryProvider, ProductCategoryProvider>();
+builder.Services.AddTransient<ICRUD_Service<ProductCategory, int>, ProductCategoryProvider>();
 #endregion
 
 // Đăng ký dịch vụ CORS

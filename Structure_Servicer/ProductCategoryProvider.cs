@@ -1,40 +1,45 @@
-﻿
-using Dapper;
+﻿using Dapper;
 using Microsoft.Data.SqlClient;
-using Microsoft.EntityFrameworkCore;
-using Microsoft.Extensions.Configuration;
-using Structure_Base;
 using Structure_Base.BaseService;
 using Structure_Context;
-using Structure_Core;
 using Structure_Core.BaseClass;
+using Structure_Core;
 using Structure_Helper;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
-
 using System.Text;
 using System.Threading.Tasks;
+using Microsoft.Extensions.Configuration;
+using Microsoft.EntityFrameworkCore;
+using Structure_Base;
 
 namespace Structure_Servicer;
-public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
+public class ProductCategoryProvider : ICRUD_Service<ProductCategory, int>
+    , IProductCategoryProvider
 {
-    private readonly DB_Ecommerce_Rookie_Context _dB;
+    private readonly DB_Ecommerce_Rookie_Context _db;
     private readonly IConfiguration _configuration;
     private readonly string _dapperConnectionString;
     private const int TimeoutInSeconds = 240;
 
-    public BrandProvider(DB_Ecommerce_Rookie_Context dB,IConfiguration configuration)
+    public ProductCategoryProvider(DB_Ecommerce_Rookie_Context db, IConfiguration configuration)
     {
-        _dB = dB;
-        _configuration = configuration;
+        _db = db ?? throw new ArgumentNullException(nameof(db));
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
         _dapperConnectionString = _configuration.GetConnectionString("DB_Ecommerce_Rookie_Dapper")!;
+
+        // Kiểm tra chuỗi kết nối
+        if (string.IsNullOrEmpty(_dapperConnectionString))
+        {
+            throw new InvalidOperationException("Connection string 'DB_Ecommerce_Rookie_Dapper' not found in appsettings.json.");
+        }
     }
     public async Task<ResultService<string>> Delete(int id)
     {
         ResultService<string> result = new();
-        using (var transaction = _dB.Database.BeginTransaction())
+        using (var transaction = _db.Database.BeginTransaction())
         {
             try
             {
@@ -45,16 +50,17 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
                     result.Code = obj.Code;
                     result.Data = "false";
                     return result;
-
                 }
-                _dB.Brands.Remove(obj.Data);
-                if (_dB.SaveChanges() <= 0)
+
+                _db.ProductCategories.Remove(obj.Data);
+                if (_db.SaveChanges() <= 0)
                 {
-                    result.Message = "Failed to delete data";
+                    result.Message = "Failed to delete product category";
                     result.Code = "-1";
                     result.Data = "false";
                     return result;
                 }
+
                 await transaction.CommitAsync();
                 result.Message = "Success";
                 result.Code = "0";
@@ -65,85 +71,78 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
             {
                 await transaction.RollbackAsync();
                 result.Code = "1";
-                result.Message = $"{sqlEx.GetType()} - {sqlEx.Message}";
+                result.Message = $"SQL error: {sqlEx.GetType()} - {sqlEx.Message}";
                 return result;
             }
             catch (ArgumentException ex)
             {
                 await transaction.RollbackAsync();
                 result.Code = "2";
-                result.Message = $"An error occurred while trying to connect to your database Server, pls check your Configuration .Details: {ex.GetType()} - {ex.Message}";
+                result.Message = $"Configuration error: {ex.GetType()} - {ex.Message}";
                 return result;
             }
             catch (Exception ex)
             {
                 await transaction.RollbackAsync();
-                result.Message = ex.Message;
+                result.Message = $"Unexpected error: {ex.Message}";
                 result.Code = "999";
                 return result;
             }
-
         }
     }
 
-    public async Task<ResultService<Brand>> Get(int id)
+    public async Task<ResultService<ProductCategory>> Get(int id)
     {
-        ResultService<Brand> result = new();
-        using (var sqlconnect = new SqlConnection(_dapperConnectionString))
+        ResultService<ProductCategory> result = new();
+        using (var sqlConnection = new SqlConnection(_dapperConnectionString))
         {
             try
             {
-                await sqlconnect.OpenAsync();
-                var rs = await sqlconnect.QuerySingleOrDefaultAsync<Brand>("Brand_GetByID",
-                    new
-                    {
-                        ID = id
-                    },
-                     commandType: CommandType.StoredProcedure,
-                     commandTimeout: 240);
+                await sqlConnection.OpenAsync();
+                var rs = await sqlConnection.QuerySingleOrDefaultAsync<ProductCategory>(
+                    "ProductCategory_GetByID",
+                    new { ID = id },
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: TimeoutInSeconds);
+
                 if (rs == null)
                 {
-                    result.Message = "Failed to get data";
+                    result.Message = "Product category not found";
                     result.Code = "1";
-
                 }
                 else
                 {
                     result.Message = "Success";
                     result.Code = "0";
+                    result.Data = rs;
                 }
-                result.Data = rs;
-                return result;
             }
             catch (Exception ex)
             {
-                result.Message = ex.Message;
+                result.Message = $"Error: {ex.Message}";
                 result.Code = "999";
-                return result;
             }
+            return result;
         }
     }
 
-    public async Task<ResultService<IEnumerable<Brand>>> GetAll()
+    public async Task<ResultService<IEnumerable<ProductCategory>>> GetAll()
     {
-        ResultService<IEnumerable<Brand>> result = new();
-
+        ResultService<IEnumerable<ProductCategory>> result = new();
         try
         {
-            using (var sqlconnect = new SqlConnection(_dapperConnectionString))
+            using (var sqlConnection = new SqlConnection(_dapperConnectionString))
             {
-                await sqlconnect.OpenAsync();
-
-                var data = await sqlconnect.QueryAsync<Brand>(
-                    "Brand_GetAll",
+                await sqlConnection.OpenAsync();
+                var data = await sqlConnection.QueryAsync<ProductCategory>(
+                    "ProductCategory_GetAll",
                     commandType: CommandType.StoredProcedure,
-                    commandTimeout: 240
-                );
+                    commandTimeout: TimeoutInSeconds);
 
                 if (data == null || !data.Any())
                 {
-                    result.Data = Enumerable.Empty<Brand>();
-                    result.Message = "No data found";
+                    result.Data = Enumerable.Empty<ProductCategory>();
+                    result.Message = "No product categories found";
                     result.Code = "1";
                 }
                 else
@@ -163,14 +162,13 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
 
         return result;
     }
-
-    public async Task<ResultService<Brand>> SaveByDapper(Brand entity)
+    public async Task<ResultService<ProductCategory>> SaveByDapper(ProductCategory entity)
     {
-        var response = new ResultService<Brand>();
+        var response = new ResultService<ProductCategory>();
 
         if (entity == null)
         {
-            return new ResultService<Brand>()
+            return new ResultService<ProductCategory>()
             {
                 Code = "1",
                 Message = "Entity is not valid(BE)"
@@ -179,8 +177,8 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
         try
         {
             string Message = string.Empty;
-            entity.BrandCode = !entity.BrandCode.Contains("BR") ? string.Empty : entity.BrandCode;
-            List<Brand> lst = new List<Brand>();
+            entity.CategoryCode = !entity.CategoryCode.Contains("CAT") ? string.Empty : entity.CategoryCode;
+            List<ProductCategory> lst = new List<ProductCategory>();
             lst.Add(entity);
 
             DataTable dtHeader = General.ConvertToDataTable(lst);
@@ -190,10 +188,10 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
                 var param = new DynamicParameters();
 
                 param.Add("@CreatedBy", entity.CreatedBy);
-                param.Add("@udtt_Brand", dtHeader.AsTableValuedParameter("UDTT_Brand"));
+                param.Add("@udtt_ProductCategory", dtHeader.AsTableValuedParameter("UDTT_ProductCategory"));
 
                 param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
-                await connection.QueryAsync<Brand>("Brand_Save",
+                await connection.QueryAsync<ProductCategory>("ProductCategory_Save",
                    param,
                    commandType: CommandType.StoredProcedure,
                       commandTimeout: TimeoutInSeconds);
@@ -251,18 +249,18 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
         }
     }
 
-    public async Task<ResultService<Brand>> GetByCode(string code)
+    public async Task<ResultService<ProductCategory>> GetByCode(string code)
     {
-        ResultService<Brand> result = new();
+        ResultService<ProductCategory> result = new();
         using (var sqlconnect = new SqlConnection(_dapperConnectionString))
         {
             try
             {
                 await sqlconnect.OpenAsync();
-                var rs = await sqlconnect.QuerySingleOrDefaultAsync<Brand>("Brand_GetByCode",
+                var rs = await sqlconnect.QuerySingleOrDefaultAsync<ProductCategory>("ProductCategory_GetByCode",
                     new
                     {
-                        BrandCode = code
+                        CategoryCode = code
                     },
                      commandType: CommandType.StoredProcedure,
                      commandTimeout: 240);
@@ -299,9 +297,9 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
 
                 await connection.OpenAsync();
                 var param = new DynamicParameters();
-                param.Add("@BrandCode", code);
+                param.Add("@CategoryCode", code);
                 param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
-                await connection.QueryAsync<Brand>("Brand_Delete",
+                await connection.QueryAsync<ProductCategory>("ProductCategory_Delete",
                    param,
                    commandType: CommandType.StoredProcedure,
                       commandTimeout: TimeoutInSeconds);

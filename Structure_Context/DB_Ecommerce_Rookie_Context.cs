@@ -18,9 +18,8 @@ public class DB_Ecommerce_Rookie_Context : DbContext
 
     }
     public DbSet<Brand> Brands { get; set; }
+    public DbSet<ProductCategory> ProductCategories { get; set; }
     //public DbSet<Product> Products { get; set; }
-    //public DbSet<Category> Categories { get; set; }
-    //public DbSet<BrandCategory> BrandCategories { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -35,9 +34,16 @@ public class DB_Ecommerce_Rookie_Context : DbContext
             .IsRequired()
             .HasMaxLength(100);
 
-        //modelBuilder.Entity<Product>().ToTable("Product");
-        //modelBuilder.Entity<Category>().ToTable("Category");
-        //modelBuilder.Entity<BrandCategory>().ToTable("BrandCategory");
+
+        modelBuilder.Entity<ProductCategory>()
+            .Property(c => c.CategoryCode)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<ProductCategory>()
+            .Property(c => c.CategoryName)
+            .IsRequired()
+            .HasMaxLength(100);
+
         base.OnModelCreating(modelBuilder);
     }
 }

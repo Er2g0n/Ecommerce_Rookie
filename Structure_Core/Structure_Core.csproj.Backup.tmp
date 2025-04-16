@@ -6,10 +6,4 @@
     <Nullable>enable</Nullable>
   </PropertyGroup>
 
-  <ItemGroup>
-    <Compile Remove="BaseClass\NewFolder\**" />
-    <EmbeddedResource Remove="BaseClass\NewFolder\**" />
-    <None Remove="BaseClass\NewFolder\**" />
-  </ItemGroup>
-
 </Project>
