@@ -35,12 +35,18 @@ builder.Services.AddDbContext<DB_Ecommerce_Rookie_Context>(options =>
 builder.Services.AddTransient<DB_Ecommerce_Rookie_Context>();
 //add services to the container.
 #region DI
+//Brand
 builder.Services.AddTransient<IBrandProvider, BrandProvider>();
 builder.Services.AddTransient<ICRUD_Service<Brand, int>, BrandProvider>();
+//ProductCategory
 builder.Services.AddTransient<IProductCategoryProvider, ProductCategoryProvider>();
 builder.Services.AddTransient<ICRUD_Service<ProductCategory, int>, ProductCategoryProvider>();
+//UnitOfMeasure
 builder.Services.AddTransient<IUnitOfMeasureProvider, UnitOfMeasureProvider>();
 builder.Services.AddTransient<ICRUD_Service<UnitOfMeasure, int>, UnitOfMeasureProvider>();
+//Product
+builder.Services.AddTransient<IProductProvider, ProductProvider>();
+builder.Services.AddTransient<ICRUD_Service<Product, int>, ProductProvider>();
 #endregion
 
 // Đăng ký dịch vụ CORS

@@ -59,7 +59,32 @@ public class DB_Ecommerce_Rookie_Context : DbContext
             .Property(c => c.UoMDescription)
             .IsRequired(false)
             .HasMaxLength(100);
-        //modelBuilder.Entity<Product>()
+
+        modelBuilder.Entity<Product>()
+            .Property(c => c.ProductCode)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<Product>()
+            .Property(c => c.ProductName)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<Product>()
+            .Property(c => c.CategoryCode)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<Product>()
+            .Property(c => c.BrandCode)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<Product>()
+            .Property(c => c.UoMCode)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<Product>()
+            .Property(c => c.Description)
+            .IsRequired()
+            .HasMaxLength(100);
+        
         base.OnModelCreating(modelBuilder);
     }
 }
