@@ -19,8 +19,6 @@ public class ProductCategoryController : ControllerBase
 
     }
 
-    #region Normal CRUD
-
     [HttpGet]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -66,9 +64,7 @@ public class ProductCategoryController : ControllerBase
         return rs == null ? BadRequest("Failed to delete product category") : Ok(rs);
     }
 
-    #endregion
 
-    #region Dapper CRUD
 
     [HttpGet("categoryCode/{categoryCode}")]
     [Consumes("application/json")]
@@ -99,5 +95,4 @@ public class ProductCategoryController : ControllerBase
     }
 
 
-    #endregion
 }

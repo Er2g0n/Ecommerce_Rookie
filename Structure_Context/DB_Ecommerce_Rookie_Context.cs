@@ -19,7 +19,10 @@ public class DB_Ecommerce_Rookie_Context : DbContext
     }
     public DbSet<Brand> Brands { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
-    //public DbSet<Product> Products { get; set; }
+
+    public DbSet<UnitOfMeasure> UnitOfMeasures { get; set; } 
+
+    public DbSet<Product> Products { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -44,6 +47,19 @@ public class DB_Ecommerce_Rookie_Context : DbContext
             .IsRequired()
             .HasMaxLength(100);
 
+        modelBuilder.Entity<UnitOfMeasure>()
+            .Property(c => c.UoMCode)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<UnitOfMeasure>()
+            .Property(c => c.UoMName)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<UnitOfMeasure>()
+            .Property(c => c.UoMDescription)
+            .IsRequired(false)
+            .HasMaxLength(100);
+        //modelBuilder.Entity<Product>()
         base.OnModelCreating(modelBuilder);
     }
 }
