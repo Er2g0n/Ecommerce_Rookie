@@ -1,15 +1,19 @@
-﻿using Dapper;
+﻿
+using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 using Structure_Base;
 using Structure_Base.BaseService;
 using Structure_Context;
 using Structure_Core;
 using Structure_Core.BaseClass;
+using Structure_Helper;
 using System;
 using System.Collections.Generic;
 using System.Data;
 using System.Linq;
+
 using System.Text;
 using System.Threading.Tasks;
 
@@ -17,14 +21,19 @@ namespace Structure_Servicer;
 public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
 {
     private readonly DB_Ecommerce_Rookie_Context _dB;
+    private readonly IConfiguration _configuration;
     private readonly string _dapperConnectionString;
     private const int TimeoutInSeconds = 240;
+   
 
 
-    public BrandProvider(DB_Ecommerce_Rookie_Context dB)
+    public BrandProvider(DB_Ecommerce_Rookie_Context dB,IConfiguration configuration)
     {
+
+
         _dB = dB;
-        _dapperConnectionString = _dapperConnectionString;
+        _configuration = configuration;
+        _dapperConnectionString = _configuration.GetConnectionString("DB_Ecommerce_Rookie_Dapper")!;
 
     }
     public async Task<ResultService<string>> Delete(int id)

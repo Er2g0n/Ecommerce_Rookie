@@ -10,6 +10,9 @@ using System.Threading.Tasks;
 namespace Structure_Context;
 public class DB_Ecommerce_Rookie_Context : DbContext
 {
+    public DB_Ecommerce_Rookie_Context()
+    {
+    }
     public DB_Ecommerce_Rookie_Context(DbContextOptions<DB_Ecommerce_Rookie_Context> options) : base(options)
     {
 
