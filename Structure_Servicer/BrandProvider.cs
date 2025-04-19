@@ -1,4 +1,5 @@
 ﻿
+using Castle.Components.DictionaryAdapter.Xml;
 using Dapper;
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
@@ -173,7 +174,7 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
             return new ResultService<Brand>()
             {
                 Code = "1",
-                Message = "Entity is not valid(BE)"
+                Message = "Entity is not valid(Provider)"
             };
         }
         try
@@ -191,23 +192,37 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
 
                 param.Add("@CreatedBy", entity.CreatedBy);
                 param.Add("@udtt_Brand", dtHeader.AsTableValuedParameter("UDTT_Brand"));
-
                 param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
-                await connection.QueryAsync<Brand>("Brand_Save",
+
+                await connection.QueryAsync<Brand>(
+                    "Brand_Save",
                    param,
                    commandType: CommandType.StoredProcedure,
-                      commandTimeout: TimeoutInSeconds);
+                   commandTimeout: TimeoutInSeconds
+                   );
                 var resultMessage = param.Get<string>("@Message");
 
                 if (resultMessage.Contains("successfully"))
                 {
                     response.Code = "0"; // Success
-                    response.Message = "Save Successfully(BE)";
+                    response.Message = $"Save Successfully(Provider):{resultMessage}";
+                    // Lấy lại Brand từ database để trả về
+                    //Backend cần trả về dữ liệu Brand hoàn chỉnh trong ResultService.Data sau khi lưu.
+                    //Frontend sẽ lấy response.data thay vì phải tự tạo đối tượng từ data gửi lên.
+                    var savedBrand = await GetByCode(entity.BrandCode);
+                    if (savedBrand.Code == "0" && savedBrand.Data != null)
+                    {
+                        response.Data = savedBrand.Data;
+                    }
+                    else
+                    {
+                        response.Message += " (Warning: Could not retrieve saved data)";
+                    }
                 }
                 else
                 {
                     response.Code = "-999"; // Fail
-                    response.Message = "Failed(BE)";
+                    response.Message = "Failed((Provider))";
                 }
 
                 return response;
