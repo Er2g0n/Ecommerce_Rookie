@@ -83,6 +83,7 @@ public class BrandController : ControllerBase
     public async Task<IActionResult> SaveByDapper([FromBody] Brand brand) 
     {
         var rs = await _brandProvider.SaveByDapper(brand);
+
         return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
     }
     [HttpDelete("DeleteByDapper")]

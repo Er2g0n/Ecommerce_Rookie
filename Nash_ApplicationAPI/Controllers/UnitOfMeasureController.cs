@@ -44,9 +44,6 @@ public class UnitOfMeasureController : ControllerBase
         return rs == null ? BadRequest("Failed to delete unit of measure") : Ok(rs);
     }
 
-    
-
-
     [HttpGet("code/{uomCode}")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -62,7 +59,7 @@ public class UnitOfMeasureController : ControllerBase
     public async Task<IActionResult> SaveByDapper([FromBody] UnitOfMeasure unitOfMeasure)
     {
         var rs = await _unitOfMeasureProvider.SaveByDapper(unitOfMeasure);
-        return rs.Code == "0" ? Ok(rs.Message) : BadRequest(rs.Message);
+        return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
     }
 
     [HttpDelete("DeleteByDapper")]
@@ -71,7 +68,7 @@ public class UnitOfMeasureController : ControllerBase
     public async Task<IActionResult> DeleteByDapper(string uomCode)
     {
         var rs = await _unitOfMeasureProvider.DeleteByDapper(uomCode);
-        return rs.Code == "0" ? Ok(rs.Message) : BadRequest(rs.Message);
+        return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
     }
 
     

@@ -37,24 +37,6 @@ public class ProductCategoryController : ControllerBase
         return rs == null ? NotFound($"Product category with ID {id} not found") : Ok(rs);
     }
 
-    //[HttpPost]
-    //[Consumes("application/json")]
-    //[Produces("application/json")]
-    //public async Task<IActionResult> Create([FromBody] ProductCategory productCategory)
-    //{
-    //    var rs = await _productCategoryProvider.Create(productCategory);
-    //    return rs == null ? BadRequest("Failed to create product category") : Ok(rs);
-    //}
-
-    //[HttpPut]
-    //[Consumes("application/json")]
-    //[Produces("application/json")]
-    //public async Task<IActionResult> Update([FromBody] ProductCategory productCategory)
-    //{
-    //    var rs = await _productCategoryProvider.Update(productCategory);
-    //    return rs == null ? BadRequest("Failed to update product category") : Ok(rs);
-    //}
-
     [HttpDelete]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -69,7 +51,7 @@ public class ProductCategoryController : ControllerBase
     [HttpGet("categoryCode/{categoryCode}")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public async Task<IActionResult> GetByCode(string categoryCode) //done
+    public async Task<IActionResult> GetByCode(string categoryCode) 
     {
         var rs = await _productCategoryProvider.GetByCode(categoryCode);
         return rs.Code == "0" ? Ok(rs) : NotFound($"Category with Code {categoryCode} not found");
@@ -82,16 +64,16 @@ public class ProductCategoryController : ControllerBase
     public async Task<IActionResult> SaveByDapper([FromBody] ProductCategory productCategory)
     {
         var rs = await _productCategoryProvider.SaveByDapper(productCategory);
-        return rs.Code == "0" ? Ok(rs.Message) : BadRequest(rs.Message);
+        return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
     }
     [HttpDelete("DeleteByDapper")]
     [Consumes("application/json")]
     [Produces("application/json")]
 
-    public async Task<IActionResult> DeleteByDapper(string categoryCode) //done
+    public async Task<IActionResult> DeleteByDapper(string categoryCode)
     {
         var rs = await _productCategoryProvider.DeleteByDapper(categoryCode);
-        return rs.Code == "0" ? Ok(rs.Message) : BadRequest(rs.Message);
+        return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
     }
 
 

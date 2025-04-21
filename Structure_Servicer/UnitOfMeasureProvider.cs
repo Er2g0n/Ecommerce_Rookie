@@ -184,17 +184,23 @@ public class UnitOfMeasureProvider : ICRUD_Service<UnitOfMeasure, int>
                 param.Add("@udtt_UnitOfMeasure", dtHeader.AsTableValuedParameter("UDTT_UnitOfMeasure"));
                 param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
 
-                await connection.QueryAsync<UnitOfMeasure>("UnitOfMeasure_Save",
+                var result = await connection.QueryAsync<UnitOfMeasure>(
+                   "UnitOfMeasure_Save",
                    param,
                    commandType: CommandType.StoredProcedure,
                    commandTimeout: TimeoutInSeconds);
 
                 var resultMessage = param.Get<string>("@Message");
 
-                if (resultMessage.Contains("successfully", StringComparison.OrdinalIgnoreCase))
+                if (resultMessage.Contains("successfully"))
                 {
                     response.Code = "0";
-                    response.Message = "Save Successfully(BE)";
+                    response.Message = $"Save Successfully(BE) - {resultMessage}";
+                    response.Data = result.FirstOrDefault();
+                    if (response.Data == null)
+                    {
+                        response.Message += " (Warning: Could not retrieve saved data(BE))";
+                    }
                 }
                 else
                 {

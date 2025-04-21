@@ -174,7 +174,7 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
             return new ResultService<Brand>()
             {
                 Code = "1",
-                Message = "Entity is not valid(Provider)"
+                Message = "Entity is not valid(BE)"
             };
         }
         try
@@ -194,7 +194,7 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
                 param.Add("@udtt_Brand", dtHeader.AsTableValuedParameter("UDTT_Brand"));
                 param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
 
-                await connection.QueryAsync<Brand>(
+                var result = await connection.QueryAsync<Brand>(
                     "Brand_Save",
                    param,
                    commandType: CommandType.StoredProcedure,
@@ -205,24 +205,20 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
                 if (resultMessage.Contains("successfully"))
                 {
                     response.Code = "0"; // Success
-                    response.Message = $"Save Successfully(Provider):{resultMessage}";
+                    response.Message = $"Save Successfully(BE) - {resultMessage}"; //Use the sql message
                     // Lấy lại Brand từ database để trả về
                     //Backend cần trả về dữ liệu Brand hoàn chỉnh trong ResultService.Data sau khi lưu.
                     //Frontend sẽ lấy response.data thay vì phải tự tạo đối tượng từ data gửi lên.
-                    var savedBrand = await GetByCode(entity.BrandCode);
-                    if (savedBrand.Code == "0" && savedBrand.Data != null)
+                    response.Data = result.FirstOrDefault(); // Lấy bản ghi đầu tiên (nếu có)
+                    if (response.Data == null)
                     {
-                        response.Data = savedBrand.Data;
-                    }
-                    else
-                    {
-                        response.Message += " (Warning: Could not retrieve saved data)";
+                        response.Message += " (Warning: Could not retrieve saved data(BE))";
                     }
                 }
                 else
                 {
                     response.Code = "-999"; // Fail
-                    response.Message = "Failed((Provider))";
+                    response.Message = "Failed((BE))";
                 }
 
                 return response;
