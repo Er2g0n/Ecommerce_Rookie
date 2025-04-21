@@ -2,11 +2,11 @@
 using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
-using Structure_Base;
 using Structure_Base.BaseService;
+using Structure_Base.ProductManagement;
 using Structure_Context;
-using Structure_Core;
 using Structure_Core.BaseClass;
+using Structure_Core.ProductManagement;
 using Structure_Helper;
 using System;
 using System.Collections.Generic;
@@ -14,7 +14,7 @@ using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
 
-namespace Structure_Servicer
+namespace Structure_Servicer.ProductManagement
 {
     public class ProductProvider : ICRUD_Service<Product, int>, IProductProvider
     {

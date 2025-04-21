@@ -37,4 +37,8 @@
 		<ProjectReference Include="..\Structure_Servicer\Structure_Servicer.csproj" />
 	</ItemGroup>
 
+	<ItemGroup>
+	  <Folder Include="Controllers\OrderManagement\" />
+	</ItemGroup>
+
 </Project>

@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Structure_Core;
+namespace Structure_Core.ProductManagement;
 public class Product : BaseClass.BaseClass
 {
     public string ProductCode { get; set; }

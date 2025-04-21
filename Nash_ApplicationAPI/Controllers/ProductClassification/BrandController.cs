@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Structure_Base.BaseService;
-using Structure_Base;
-using Structure_Core;
+using Structure_Core.ProductClassification;
+using Structure_Base.ProductClassification;
 
-namespace Nash_ApplicationAPI.Controllers;
+namespace Nash_ApplicationAPI.Controllers.ProductClassification;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -22,7 +22,7 @@ public class BrandController : ControllerBase
     [HttpGet]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public async Task<IActionResult> GetAll() 
+    public async Task<IActionResult> GetAll()
     {
         var rs = await _ICRUD_Service.GetAll();
         return rs == null ? BadRequest("No brands found") : Ok(rs);
@@ -31,7 +31,7 @@ public class BrandController : ControllerBase
     [HttpGet("{id}")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public async Task<IActionResult> GetById(int id) 
+    public async Task<IActionResult> GetById(int id)
     {
         var rs = await _ICRUD_Service.Get(id);
         return rs == null ? NotFound($"Brand with ID {id} not found") : Ok(rs);
@@ -58,7 +58,7 @@ public class BrandController : ControllerBase
     [HttpDelete]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public async Task<IActionResult> Delete(int id) 
+    public async Task<IActionResult> Delete(int id)
     {
         var rs = await _ICRUD_Service.Delete(id);
         return rs == null ? BadRequest("Failed to delete brand") : Ok(rs);
@@ -70,7 +70,7 @@ public class BrandController : ControllerBase
     [HttpGet("brandCode/{brandCode}")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public async Task<IActionResult> GetByCode(string brandCode) 
+    public async Task<IActionResult> GetByCode(string brandCode)
     {
         var rs = await _brandProvider.GetByCode(brandCode);
         return rs.Code == "0" ? Ok(rs) : NotFound($"Brand with Code {brandCode} not found");
@@ -80,7 +80,7 @@ public class BrandController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
 
-    public async Task<IActionResult> SaveByDapper([FromBody] Brand brand) 
+    public async Task<IActionResult> SaveByDapper([FromBody] Brand brand)
     {
         var rs = await _brandProvider.SaveByDapper(brand);
 
@@ -90,7 +90,7 @@ public class BrandController : ControllerBase
     [Consumes("application/json")]
     [Produces("application/json")]
 
-    public async Task<IActionResult> DeleteByDapper(string brandCode) 
+    public async Task<IActionResult> DeleteByDapper(string brandCode)
     {
         var rs = await _brandProvider.DeleteByDapper(brandCode);
         return rs.Code == "0" ? Ok(rs) : BadRequest(rs);

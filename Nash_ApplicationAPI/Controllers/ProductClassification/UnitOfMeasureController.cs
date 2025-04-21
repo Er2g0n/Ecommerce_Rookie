@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
 using Structure_Base.BaseService;
-using Structure_Base;
-using Structure_Core;
+using Structure_Core.ProductClassification;
+using Structure_Base.ProductClassification;
 
-namespace Nash_ApplicationAPI.Controllers;
+namespace Nash_ApplicationAPI.Controllers.ProductClassification;
 [Route("api/[controller]")]
 [ApiController]
 public class UnitOfMeasureController : ControllerBase
@@ -71,5 +71,5 @@ public class UnitOfMeasureController : ControllerBase
         return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
     }
 
-    
+
 }

@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Structure_Base;
 using Structure_Base.BaseService;
-using Structure_Core;
+using Structure_Base.ProductManagement;
+using Structure_Core.ProductManagement;
 
-namespace Nash_ApplicationAPI.Controllers
+namespace Nash_ApplicationAPI.Controllers.ProductManagement
 {
     [Route("api/[controller]")]
     [ApiController]

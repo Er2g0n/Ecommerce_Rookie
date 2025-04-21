@@ -1,12 +1,12 @@
 ﻿using Structure_Core.BaseClass;
-using Structure_Core;
 using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using Structure_Core.ProductClassification;
 
-namespace Structure_Base;
+namespace Structure_Base.ProductClassification;
 public interface IUnitOfMeasureProvider
 {
     Task<ResultService<UnitOfMeasure>> SaveByDapper(UnitOfMeasure entity);

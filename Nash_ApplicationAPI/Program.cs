@@ -1,9 +1,12 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Structure_Base.BaseService;
-using Structure_Base;
 using Structure_Context;
-using Structure_Core;
-using Structure_Servicer;
+using Structure_Core.ProductClassification;
+using Structure_Core.ProductManagement;
+using Structure_Servicer.ProductClassification;
+using Structure_Servicer.ProductManagement;
+using Structure_Base.ProductClassification;
+using Structure_Base.ProductManagement;
 
 var builder = WebApplication.CreateBuilder(args);
 

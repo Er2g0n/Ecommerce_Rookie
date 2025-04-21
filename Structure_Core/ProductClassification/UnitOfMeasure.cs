@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Structure_Core;
+namespace Structure_Core.ProductClassification;
 public class UnitOfMeasure : BaseClass.BaseClass
 {
     public string UoMCode { get; set; }       // Mã đơn vị đo lường

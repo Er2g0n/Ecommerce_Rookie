@@ -12,4 +12,8 @@
     <None Remove="BaseClass\NewFolder\**" />
   </ItemGroup>
 
+  <ItemGroup>
+    <Folder Include="OrderManagement\" />
+  </ItemGroup>
+
 </Project>

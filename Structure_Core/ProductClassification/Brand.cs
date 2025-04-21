@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Structure_Core;
+namespace Structure_Core.ProductClassification;
 [Table("Brands")]
 public class Brand : BaseClass.BaseClass
 {

@@ -1,5 +1,6 @@
 ﻿using Microsoft.EntityFrameworkCore;
-using Structure_Core;
+using Structure_Core.ProductClassification;
+using Structure_Core.ProductManagement;
 using System;
 using System.Collections.Generic;
 using System.Linq;

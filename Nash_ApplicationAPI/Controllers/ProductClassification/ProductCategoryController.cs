@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Mvc;
-using Structure_Base;
 using Structure_Base.BaseService;
-using Structure_Core;
+using Structure_Base.ProductClassification;
+using Structure_Core.ProductClassification;
 
-namespace Nash_ApplicationAPI.Controllers;
+namespace Nash_ApplicationAPI.Controllers.ProductClassification;
 
 [Route("api/[controller]")]
 [ApiController]
@@ -51,7 +51,7 @@ public class ProductCategoryController : ControllerBase
     [HttpGet("categoryCode/{categoryCode}")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    public async Task<IActionResult> GetByCode(string categoryCode) 
+    public async Task<IActionResult> GetByCode(string categoryCode)
     {
         var rs = await _productCategoryProvider.GetByCode(categoryCode);
         return rs.Code == "0" ? Ok(rs) : NotFound($"Category with Code {categoryCode} not found");
