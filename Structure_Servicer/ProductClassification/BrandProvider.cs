@@ -138,7 +138,7 @@ public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
                 var data = await sqlconnect.QueryAsync<Brand>(
                     "Brand_GetAll",
                     commandType: CommandType.StoredProcedure,
-                    commandTimeout: 240
+                    commandTimeout: TimeoutInSeconds
                 );
 
                 if (data == null || !data.Any())

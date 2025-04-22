@@ -134,14 +134,24 @@ public class UnitOfMeasureProvider : ICRUD_Service<UnitOfMeasure, int>
             using (var sqlConnection = new SqlConnection(_dapperConnectionString))
             {
                 await sqlConnection.OpenAsync();
+
                 var data = await sqlConnection.QueryAsync<UnitOfMeasure>(
                     "UnitOfMeasure_GetAll",
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: TimeoutInSeconds);
 
-                result.Data = data ?? Enumerable.Empty<UnitOfMeasure>();
-                result.Message = "Success";
-                result.Code = "0";
+                if (data == null || !data.Any())
+                {
+                    result.Data = Enumerable.Empty<UnitOfMeasure>();
+                    result.Message = "No data found";
+                    result.Code = "1";
+                }
+                else
+                {
+                    result.Data = data;
+                    result.Message = "Success";
+                    result.Code = "0";
+                }
             }
         }
         catch (Exception ex)
