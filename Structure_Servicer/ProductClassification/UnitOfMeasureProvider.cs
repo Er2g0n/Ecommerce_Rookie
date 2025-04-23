@@ -3,7 +3,7 @@ using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Configuration;
 using Structure_Base.BaseService;
 using Structure_Base.ProductClassification;
-using Structure_Context;
+using Structure_Context.ProductClassification;
 using Structure_Core.BaseClass;
 using Structure_Core.ProductClassification;
 using Structure_Helper;
@@ -18,11 +18,11 @@ namespace Structure_Servicer.ProductClassification;
 public class UnitOfMeasureProvider : ICRUD_Service<UnitOfMeasure, int>
     , IUnitOfMeasureProvider
 {
-    private readonly DB_Ecommerce_Rookie_Context _db;
+    private readonly DB_ProductClassification_Context _db;
     private readonly IConfiguration _configuration;
     private readonly string _dapperConnectionString;
     private const int TimeoutInSeconds = 240;
-    public UnitOfMeasureProvider(DB_Ecommerce_Rookie_Context db, IConfiguration configuration)
+    public UnitOfMeasureProvider(DB_ProductClassification_Context db, IConfiguration configuration)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

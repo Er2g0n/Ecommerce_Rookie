@@ -60,7 +60,7 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
         public async Task<IActionResult> SaveByDapper([FromBody] Product product)
         {
             var rs = await _productProvider.SaveByDapper(product);
-            return rs.Code == "0" ? Ok(rs.Message) : BadRequest(rs.Message);
+            return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
         }
 
         [HttpDelete("DeleteByDapper")]
@@ -69,7 +69,7 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
         public async Task<IActionResult> DeleteByDapper(string productCode)
         {
             var rs = await _productProvider.DeleteByDapper(productCode);
-            return rs.Code == "0" ? Ok(rs.Message) : BadRequest(rs.Message);
+            return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
         }
     }
 }

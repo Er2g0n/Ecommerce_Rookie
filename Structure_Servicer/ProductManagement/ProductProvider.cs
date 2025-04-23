@@ -3,8 +3,9 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Structure_Base.BaseService;
+using Structure_Base.ImageService;
 using Structure_Base.ProductManagement;
-using Structure_Context;
+using Structure_Context.ProductManagement;
 using Structure_Core.BaseClass;
 using Structure_Core.ProductManagement;
 using Structure_Helper;
@@ -18,16 +19,18 @@ namespace Structure_Servicer.ProductManagement
 {
     public class ProductProvider : ICRUD_Service<Product, int>, IProductProvider
     {
-        private readonly DB_Ecommerce_Rookie_Context _db;
+        private readonly DB_ProductManagement_Context _db;
+        private readonly IImageProvider _imageProvider;
         private readonly IConfiguration _configuration;
         private readonly string _dapperConnectionString;
         private const int TimeoutInSeconds = 240;
 
-        public ProductProvider(DB_Ecommerce_Rookie_Context db, IConfiguration configuration)
+        public ProductProvider(DB_ProductManagement_Context db, IConfiguration configuration,IImageProvider image)
         {
             _db = db ?? throw new ArgumentNullException(nameof(db));
             _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
             _dapperConnectionString = _configuration.GetConnectionString("DB_Ecommerce_Rookie_Dapper")!;
+            _imageProvider = image;
 
             // Kiểm tra chuỗi kết nối
             if (string.IsNullOrEmpty(_dapperConnectionString))
@@ -190,18 +193,25 @@ namespace Structure_Servicer.ProductManagement
 
                     param.Add("@CreatedBy", entity.CreatedBy);
                     param.Add("@udtt_Product", dtHeader.AsTableValuedParameter("UDTT_Product"));
-
                     param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
-                    await connection.QueryAsync<Product>("Product_Save",
+
+                    var result = await connection.QueryAsync<Product>(
+                        "Product_Save",
                        param,
                        commandType: CommandType.StoredProcedure,
-                       commandTimeout: TimeoutInSeconds);
+                       commandTimeout: TimeoutInSeconds
+                       );
                     var resultMessage = param.Get<string>("@Message");
 
                     if (resultMessage.Contains("successfully"))
                     {
                         response.Code = "0"; // Success
-                        response.Message = "Save Successfully(BE)";
+                        response.Message = $"Save Successfully(BE) - {resultMessage}";
+                        response.Data = result.FirstOrDefault();
+                        if (response.Data == null)
+                        {
+                            response.Message += " (Warning: Could not retrieve saved data(BE))";
+                        }
                     }
                     else
                     {

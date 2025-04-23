@@ -13,4 +13,7 @@
 	<ItemGroup>
 	  <Folder Include="OrderManagement\" />
 	</ItemGroup>
+	<ItemGroup>
+	  <PackageReference Include="CloudinaryDotNet" Version="1.27.5" />
+	</ItemGroup>
 </Project>

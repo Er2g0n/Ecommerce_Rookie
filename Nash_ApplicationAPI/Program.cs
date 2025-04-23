@@ -1,12 +1,15 @@
 ﻿using Microsoft.EntityFrameworkCore;
 using Structure_Base.BaseService;
-using Structure_Context;
 using Structure_Core.ProductClassification;
 using Structure_Core.ProductManagement;
 using Structure_Servicer.ProductClassification;
 using Structure_Servicer.ProductManagement;
 using Structure_Base.ProductClassification;
 using Structure_Base.ProductManagement;
+using Structure_Context.ProductClassification;
+using Structure_Context.ProductManagement;
+using Structure_Base.ImageService;
+using Structure_Servicer.Image;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -31,11 +34,13 @@ else
     Console.WriteLine($"Connection String: {connectionString}"); // Ghi log để kiểm tra
 }
 // Dang ký databasecontext
-builder.Services.AddDbContext<DB_Ecommerce_Rookie_Context>(options =>
+builder.Services.AddDbContext<DB_ProductClassification_Context>(options =>
     options.UseSqlServer(connectionString));
-
+builder.Services.AddDbContext<DB_ProductManagement_Context>(options =>
+    options.UseSqlServer(connectionString));
 // add dbcontext
-builder.Services.AddTransient<DB_Ecommerce_Rookie_Context>();
+builder.Services.AddTransient<DB_ProductClassification_Context>();
+builder.Services.AddTransient<DB_ProductManagement_Context>();
 //add services to the container.
 #region DI
 //Brand
@@ -50,6 +55,8 @@ builder.Services.AddTransient<ICRUD_Service<UnitOfMeasure, int>, UnitOfMeasurePr
 //Product
 builder.Services.AddTransient<IProductProvider, ProductProvider>();
 builder.Services.AddTransient<ICRUD_Service<Product, int>, ProductProvider>();
+//Image
+builder.Services.AddTransient<IImageProvider, ImageProvider>();
 #endregion
 
 // Đăng ký dịch vụ CORS

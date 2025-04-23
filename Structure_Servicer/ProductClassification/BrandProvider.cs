@@ -6,7 +6,7 @@ using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Structure_Base.BaseService;
 using Structure_Base.ProductClassification;
-using Structure_Context;
+using Structure_Context.ProductClassification;
 using Structure_Core.BaseClass;
 using Structure_Core.ProductClassification;
 using Structure_Helper;
@@ -21,12 +21,12 @@ using System.Threading.Tasks;
 namespace Structure_Servicer.ProductClassification;
 public class BrandProvider : ICRUD_Service<Brand, int>, IBrandProvider
 {
-    private readonly DB_Ecommerce_Rookie_Context _dB;
+    private readonly DB_ProductClassification_Context _dB;
     private readonly IConfiguration _configuration;
     private readonly string _dapperConnectionString;
     private const int TimeoutInSeconds = 240;
 
-    public BrandProvider(DB_Ecommerce_Rookie_Context dB, IConfiguration configuration)
+    public BrandProvider(DB_ProductClassification_Context dB, IConfiguration configuration)
     {
         _dB = dB;
         _configuration = configuration;

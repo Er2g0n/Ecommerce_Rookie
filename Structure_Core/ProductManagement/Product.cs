@@ -30,6 +30,4 @@ public class ProductDto : BaseClass.BaseClass
     public string UoMCode { get; set; }
     public string UoMName { get; set; }
     public string UoMDescription { get; set; }
-
-    public string Description { get; set; }
 }

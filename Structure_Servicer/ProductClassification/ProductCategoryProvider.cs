@@ -1,7 +1,6 @@
 ﻿using Dapper;
 using Microsoft.Data.SqlClient;
 using Structure_Base.BaseService;
-using Structure_Context;
 using Structure_Core.BaseClass;
 using Structure_Helper;
 using System;
@@ -14,17 +13,18 @@ using Microsoft.Extensions.Configuration;
 using Microsoft.EntityFrameworkCore;
 using Structure_Core.ProductClassification;
 using Structure_Base.ProductClassification;
+using Structure_Context.ProductClassification;
 
 namespace Structure_Servicer.ProductClassification;
 public class ProductCategoryProvider : ICRUD_Service<ProductCategory, int>
     , IProductCategoryProvider
 {
-    private readonly DB_Ecommerce_Rookie_Context _db;
+    private readonly DB_ProductClassification_Context _db;
     private readonly IConfiguration _configuration;
     private readonly string _dapperConnectionString;
     private const int TimeoutInSeconds = 240;
 
-    public ProductCategoryProvider(DB_Ecommerce_Rookie_Context db, IConfiguration configuration)
+    public ProductCategoryProvider(DB_ProductClassification_Context db, IConfiguration configuration)
     {
         _db = db ?? throw new ArgumentNullException(nameof(db));
         _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));

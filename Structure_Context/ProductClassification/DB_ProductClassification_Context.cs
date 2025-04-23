@@ -8,22 +8,19 @@ using System.Reflection.Emit;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Structure_Context;
-public class DB_Ecommerce_Rookie_Context : DbContext
+namespace Structure_Context.ProductClassification;
+public class DB_ProductClassification_Context : DbContext
 {
-    public DB_Ecommerce_Rookie_Context()
+    public DB_ProductClassification_Context()
     {
     }
-    public DB_Ecommerce_Rookie_Context(DbContextOptions<DB_Ecommerce_Rookie_Context> options) : base(options)
+    public DB_ProductClassification_Context(DbContextOptions<DB_ProductClassification_Context> options) : base(options)
     {
 
     }
     public DbSet<Brand> Brands { get; set; }
     public DbSet<ProductCategory> ProductCategories { get; set; }
-
-    public DbSet<UnitOfMeasure> UnitOfMeasures { get; set; } 
-
-    public DbSet<Product> Products { get; set; }
+    public DbSet<UnitOfMeasure> UnitOfMeasures { get; set; }
 
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
@@ -61,31 +58,8 @@ public class DB_Ecommerce_Rookie_Context : DbContext
             .IsRequired(false)
             .HasMaxLength(100);
 
-        modelBuilder.Entity<Product>()
-            .Property(c => c.ProductCode)
-            .IsRequired()
-            .HasMaxLength(100);
-        modelBuilder.Entity<Product>()
-            .Property(c => c.ProductName)
-            .IsRequired()
-            .HasMaxLength(100);
-        modelBuilder.Entity<Product>()
-            .Property(c => c.CategoryCode)
-            .IsRequired()
-            .HasMaxLength(100);
-        modelBuilder.Entity<Product>()
-            .Property(c => c.BrandCode)
-            .IsRequired()
-            .HasMaxLength(100);
-        modelBuilder.Entity<Product>()
-            .Property(c => c.UoMCode)
-            .IsRequired()
-            .HasMaxLength(100);
-        modelBuilder.Entity<Product>()
-            .Property(c => c.Description)
-            .IsRequired()
-            .HasMaxLength(100);
-        
+       
+
         base.OnModelCreating(modelBuilder);
     }
 }
