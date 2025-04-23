@@ -8,8 +8,6 @@ using Structure_Base.ProductClassification;
 using Structure_Base.ProductManagement;
 using Structure_Context.ProductClassification;
 using Structure_Context.ProductManagement;
-using Structure_Base.ImageService;
-using Structure_Servicer.Image;
 
 var builder = WebApplication.CreateBuilder(args);
 

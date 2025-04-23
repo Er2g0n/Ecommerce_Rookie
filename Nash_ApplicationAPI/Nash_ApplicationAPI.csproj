@@ -39,6 +39,7 @@
 
 	<ItemGroup>
 	  <Folder Include="Controllers\OrderManagement\" />
+	  <Folder Include="wwwroot\" />
 	</ItemGroup>
 
 </Project>

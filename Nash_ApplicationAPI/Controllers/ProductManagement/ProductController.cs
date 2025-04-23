@@ -1,7 +1,9 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Humanizer;
+using Microsoft.AspNetCore.Mvc;
 using Structure_Base.BaseService;
 using Structure_Base.ProductManagement;
 using Structure_Core.ProductManagement;
+using Structure_Servicer.ProductManagement;
 
 namespace Nash_ApplicationAPI.Controllers.ProductManagement
 {
@@ -11,11 +13,13 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
     {
         private readonly ICRUD_Service<Product, int> _ICRUD_Service;
         private readonly IProductProvider _productProvider;
+        private readonly IImageProvider _imageProvider;
 
-        public ProductController(ICRUD_Service<Product, int> iCRUD_Service, IProductProvider productProvider)
+        public ProductController(ICRUD_Service<Product, int> iCRUD_Service, IProductProvider productProvider, IImageProvider imageProvider)
         {
             _ICRUD_Service = iCRUD_Service;
             _productProvider = productProvider;
+            _imageProvider = imageProvider;
         }
 
         [HttpGet]
@@ -55,11 +59,35 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
         }
 
         [HttpPost("SaveByDapper")]
-        [Consumes("application/json")]
+        //[Consumes("application/json")]
+        [Consumes("multipart/form-data")]
         [Produces("application/json")]
-        public async Task<IActionResult> SaveByDapper([FromBody] Product product)
+        public async Task<IActionResult> SaveByDapper([FromBody] ProductDto productDto) //productDto đã có một list bên product
         {
-            var rs = await _productProvider.SaveByDapper(product);
+            Product_ProductImage_Dto entity = new();
+            foreach (var item in productDto.Images)
+            {
+                var path = await _imageProvider.UploadImageAsync(item, item.FileName);
+                if (path != null)
+                {
+                    entity.ProductImages.Add(new ProductImage
+                    {
+                        ImagePath = path,
+                        CreatedBy = productDto.CreatedBy,
+                        CreatedDate = DateTime.Now
+                    });
+                }
+                else
+                {
+                    //Nếu ánh vữa upload failed -> Xóa tất cả ảnh vừa upload
+                    foreach (var image in entity.ProductImages)
+                    {
+                        await _imageProvider.RemoveImageAsync(image.ImagePath);
+                    }
+                    return BadRequest("Upload image failed");
+                }
+            }
+            var rs = await _productProvider.SaveByDapper(entity);
             return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
         }
 

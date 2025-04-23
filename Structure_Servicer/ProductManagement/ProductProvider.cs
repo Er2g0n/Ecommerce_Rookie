@@ -3,7 +3,6 @@ using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 using Structure_Base.BaseService;
-using Structure_Base.ImageService;
 using Structure_Base.ProductManagement;
 using Structure_Context.ProductManagement;
 using Structure_Core.BaseClass;
@@ -179,7 +178,7 @@ namespace Structure_Servicer.ProductManagement
                 };
             }
             try
-            {
+            { 
                 string Message = string.Empty;
                 entity.ProductCode = !entity.ProductCode.Contains("PROD") ? string.Empty : entity.ProductCode;
                 List<Product> lst = new List<Product>();
@@ -193,6 +192,7 @@ namespace Structure_Servicer.ProductManagement
 
                     param.Add("@CreatedBy", entity.CreatedBy);
                     param.Add("@udtt_Product", dtHeader.AsTableValuedParameter("UDTT_Product"));
+         
                     param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
 
                     var result = await connection.QueryAsync<Product>(
@@ -212,6 +212,7 @@ namespace Structure_Servicer.ProductManagement
                         {
                             response.Message += " (Warning: Could not retrieve saved data(BE))";
                         }
+
                     }
                     else
                     {

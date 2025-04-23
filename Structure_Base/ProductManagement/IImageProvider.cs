@@ -5,7 +5,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace Structure_Base.ImageService;
+namespace Structure_Base.ProductManagement;
 public interface IImageProvider
 {
 

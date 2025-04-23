@@ -1,9 +1,9 @@
 ﻿using Microsoft.AspNetCore.Http;
 using CloudinaryDotNet.Actions;
 using Microsoft.Extensions.Configuration;
-using Structure_Base.ImageService;
 using CloudinaryDotNet;
-namespace Structure_Servicer.Image;
+using Structure_Base.ProductManagement;
+namespace Structure_Servicer.ProductManagement;
 public class ImageProvider : IImageProvider
 
 {

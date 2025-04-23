@@ -11,6 +11,7 @@
 		<ProjectReference Include="..\Structure_Helper\Structure_Helper.csproj" />
 	</ItemGroup>
 	<ItemGroup>
+	  <Folder Include="Image\" />
 	  <Folder Include="OrderManagement\" />
 	</ItemGroup>
 	<ItemGroup>

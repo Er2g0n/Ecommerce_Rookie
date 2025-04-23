@@ -17,6 +17,7 @@ public class DB_ProductManagement_Context : DbContext
     {
     }
     public DbSet<Product> Products { get; set; }
+    public DbSet<ProductImage> ProductImages { get; set; }
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
@@ -26,6 +27,10 @@ public class DB_ProductManagement_Context : DbContext
             .HasMaxLength(100);
         modelBuilder.Entity<Product>()
             .Property(c => c.ProductName)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<Product>()
+            .Property(c => c.ProductImageUrl)
             .IsRequired()
             .HasMaxLength(100);
         modelBuilder.Entity<Product>()
@@ -44,7 +49,31 @@ public class DB_ProductManagement_Context : DbContext
             .Property(c => c.Description)
             .IsRequired()
             .HasMaxLength(100);
-            
+
+        // Cấu hình cho ProductImage
+        modelBuilder.Entity<ProductImage>()
+            .Property(c => c.ImageCode)
+            .IsRequired()
+            .HasMaxLength(50);
+        modelBuilder.Entity<ProductImage>()
+            .Property(c => c.ProductCode)
+            .IsRequired()
+            .HasMaxLength(100);
+        modelBuilder.Entity<ProductImage>()
+            .Property(c => c.ImagePath)
+            .IsRequired()
+            .HasMaxLength(200);
+        modelBuilder.Entity<ProductImage>()
+            .Property(c => c.IsPrimary)
+            .IsRequired();
+
+        //// Thiết lập mối quan hệ
+        //modelBuilder.Entity<ProductImage>()
+        //    .HasOne<Product>()
+        //    .WithMany()
+        //    .HasForeignKey(p => p.ProductCode)
+        //    .HasPrincipalKey(p => p.ProductCode);
+
         base.OnModelCreating(modelBuilder);
     }
 
