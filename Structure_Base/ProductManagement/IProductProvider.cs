@@ -9,7 +9,11 @@ using System.Threading.Tasks;
 namespace Structure_Base.ProductManagement;
 public interface IProductProvider
 {
-    Task<ResultService<Product>> SaveByDapper(Product_ProductImage_Dto entity);
-    Task<ResultService<Product>> GetByCode(string code);
-    Task<ResultService<string>> DeleteByDapper(string code);
+    Task<ResultService<Product>> SaveByDapper(Product entity);
+    Task<ResultService<Product>> GetByCode(string proCode);
+    Task<ResultService<string>> DeleteByDapper(string proCode);
+    Task<ResultService<Product_ProductImage_Dto>> SaveProductAndImage(Product_ProductImage_Dto entity);
+    Task<ResultService<Product_ProductImage_Dto>> GetProductAndImageByCode(string proCode);
+
+    Task<ResultService<string>> Delete_ProductAndImage(List<ProductImage> entity);
 }

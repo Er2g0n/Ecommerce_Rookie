@@ -12,8 +12,8 @@ public abstract class BaseClass
     [DatabaseGenerated(DatabaseGeneratedOption.Identity)]
     [Key]
     public int ID { get; set; } = 0;
-    public string CreatedBy { get; set; }
-    public DateTime CreatedDate { get; set; } = DateTime.Now;
-    public string UpdatedBy { get; set; }
-    public DateTime UpdatedDate { get; set; } = DateTime.Now;
+    public string? CreatedBy { get; set; }
+    public DateTime? CreatedDate { get; set; }
+    public string? UpdatedBy { get; set; }
+    public DateTime? UpdatedDate { get; set; }
 }

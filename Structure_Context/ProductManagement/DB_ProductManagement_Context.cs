@@ -21,6 +21,7 @@ public class DB_ProductManagement_Context : DbContext
 
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
+        //Product
         modelBuilder.Entity<Product>()
             .Property(c => c.ProductCode)
             .IsRequired()
@@ -49,14 +50,9 @@ public class DB_ProductManagement_Context : DbContext
             .Property(c => c.Description)
             .IsRequired()
             .HasMaxLength(100);
-
-        // Cấu hình cho ProductImage
+        //Product Image
         modelBuilder.Entity<ProductImage>()
-            .Property(c => c.ImageCode)
-            .IsRequired()
-            .HasMaxLength(50);
-        modelBuilder.Entity<ProductImage>()
-            .Property(c => c.ProductCode)
+            .Property(c => c.RefProductCode)
             .IsRequired()
             .HasMaxLength(100);
         modelBuilder.Entity<ProductImage>()

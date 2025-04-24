@@ -13,6 +13,8 @@ using System.Collections.Generic;
 using System.Data;
 using System.Linq;
 using System.Threading.Tasks;
+using static Dapper.SqlMapper;
+using static System.Net.Mime.MediaTypeNames;
 
 namespace Structure_Servicer.ProductManagement
 {
@@ -181,8 +183,8 @@ namespace Structure_Servicer.ProductManagement
             { 
                 string Message = string.Empty;
                 entity.ProductCode = !entity.ProductCode.Contains("PROD") ? string.Empty : entity.ProductCode;
-                List<Product> lst = new List<Product>();
-                lst.Add(entity);
+
+                var lst = new List<Product> { entity }; //viết gọn
 
                 DataTable dtHeader = General.ConvertToDataTable(lst);
                 using (var connection = new SqlConnection(_dapperConnectionString))
@@ -222,6 +224,7 @@ namespace Structure_Servicer.ProductManagement
 
                     return response;
                 }
+            
             }
             catch (SqlException sqlex)
             {
@@ -322,6 +325,223 @@ namespace Structure_Servicer.ProductManagement
                         resultService.Message = resultMessage ?? "Failed(BE)";
                     }
 
+                    return resultService;
+                }
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                return new ResultService<string>()
+                {
+                    Code = "2",
+                    Data = null,
+                    Message = $"{ex.GetType()}, {ex.Message}"
+                };
+            }
+            catch (DbUpdateException ex)
+            {
+                return new ResultService<string>()
+                {
+                    Code = "3",
+                    Data = null,
+                    Message = $"{ex.GetType()}, {ex.Message}"
+                };
+            }
+            catch (OperationCanceledException ex)
+            {
+                return new ResultService<string>()
+                {
+                    Code = "4",
+                    Data = null,
+                    Message = $"{ex.GetType()}, {ex.Message}"
+                };
+            }
+            catch (SqlException ex)
+            {
+                return new ResultService<string>()
+                {
+                    Code = "5",
+                    Data = null,
+                    Message = $"{ex.GetType()}, {ex.Message}"
+                };
+            }
+            catch (Exception ex)
+            {
+                return new ResultService<string>()
+                {
+                    Code = "6",
+                    Data = null,
+                    Message = $"{ex.GetType()}, {ex.Message}"
+                };
+            }
+        }
+
+        public async Task<ResultService<Product_ProductImage_Dto>> SaveProductAndImage(Product_ProductImage_Dto entity)
+        {
+            var response = new ResultService<Product_ProductImage_Dto>();
+            if (entity == null)
+            {
+                return new ResultService<Product_ProductImage_Dto>()
+                {
+                    Code = "1",
+                    Message = "Entity is not valid(BE)"
+                };
+            }
+            try
+            {
+                string Message = string.Empty;
+                entity.Products[0].ProductCode = !entity.Products[0].ProductCode.Contains("PROD") ? string.Empty : entity.Products[0].ProductCode;
+
+                // Tạo DataTable cho Products
+                DataTable dtHeader = General.ConvertToDataTable(entity.Products);
+
+                // Tạo DataTable cho ProductImages
+                DataTable dtDetail = General.ConvertToDataTable(entity.ProductImages ?? new List<ProductImage>());
+
+                using (var connection = new SqlConnection(_dapperConnectionString))
+                {
+                    await connection.OpenAsync();
+                    var param = new DynamicParameters();
+
+                    param.Add("@CreatedBy", entity.CreatedBy ?? "system");
+                    param.Add("@udtt_Product", dtHeader.AsTableValuedParameter("UDTT_Product"));
+                    param.Add("@udtt_ProductImage", dtDetail.AsTableValuedParameter("UDTT_ProductImage"));
+                    param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
+
+                    using (var multi = await connection.QueryMultipleAsync(
+                        "ProductAndImage_Save",
+                        param,
+                        commandType: CommandType.StoredProcedure,
+                        commandTimeout: TimeoutInSeconds
+                    ))
+                    {
+                        var savedProduct = await multi.ReadSingleOrDefaultAsync<Product>();
+                        var images = await multi.ReadAsync<ProductImage>();
+
+                        response.Code = "0"; // Success
+                        response.Message = $"Save Successfully(BE) - {param.Get<string>("@Message")}";
+                        response.Data = new Product_ProductImage_Dto
+                        {
+                            CreatedBy = entity.CreatedBy ?? "system",
+                            Products = savedProduct != null ? new List<Product> { savedProduct } : new List<Product>(),
+                            ProductImages = images?.ToList() ?? new List<ProductImage>()
+                        };
+                        if (response.Data.Products.Count == 0)
+                        {
+                            response.Message += " (Warning: Could not retrieve saved product data(BE))";
+                        }
+                    }
+                }
+            }
+            catch (SqlException sqlex)
+            {
+                response.Code = "2";
+                response.Message = $"Something wrong happened with Database, please Check the configuration: {sqlex.GetType()} - {sqlex.Message}";
+            }
+            catch (DbUpdateConcurrencyException ex)
+            {
+                response.Code = "3";
+                response.Message = $"Concurrency error or Conflict happened: {ex.GetType()} - {ex.Message}";
+            }
+            catch (DbUpdateException ex)
+            {
+                response.Code = "4";
+                response.Message = $"Database update error: {ex.GetType()} - {ex.Message}";
+            }
+            catch (OperationCanceledException ex)
+            {
+                response.Code = "5";
+                response.Message = $"Operation canceled: {ex.GetType()} - {ex.Message}";
+            }
+            catch (Exception ex)
+            {
+                response.Code = "6";
+                response.Message = $"An unexpected error occurred: {ex.GetType()} - {ex.Message}";
+            }
+
+            return response;
+        }
+
+        public async Task<ResultService<Product_ProductImage_Dto>> GetProductAndImageByCode(string proCode)
+        {
+            var response = new ResultService<Product_ProductImage_Dto>();
+            using (var connection = new SqlConnection(_dapperConnectionString))
+            {
+                try
+                {
+                    await connection.OpenAsync();
+
+                    // Gọi Stored Procedure và lấy hai result sets
+                    using (var multiResult = await connection.QueryMultipleAsync(
+                        "ProductAndImages_GetByCode",
+                        new { ProductCode = proCode },
+                        commandType: CommandType.StoredProcedure,
+                        commandTimeout: TimeoutInSeconds))
+                    {
+                        // Lấy thông tin sản phẩm
+                        var product = await multiResult.ReadSingleOrDefaultAsync<Product>();
+                        if (product == null)
+                        {
+                            response.Code = "1";
+                            response.Message = "Product not found(BE)";
+                            return response;
+                        }
+
+                        // Lấy danh sách hình ảnh
+                        var images = await multiResult.ReadAsync<ProductImage>();
+
+                        // Tạo đối tượng trả về
+                        response.Data = new Product_ProductImage_Dto
+                        {
+                            Products = new List<Product> { product },
+                            ProductImages = images?.ToList() ?? new List<ProductImage>(),
+                            CreatedBy = product.CreatedBy
+                        };
+
+                        response.Code = "0";
+                        response.Message = "Retrieved Successfully(BE)";
+                    }
+                }
+                catch (SqlException sqlex)
+                {
+                    response.Code = "2";
+                    response.Message = $"Database error: {sqlex.GetType()} - {sqlex.Message}";
+                }
+                catch (Exception ex)
+                {
+                    response.Code = "999";
+                    response.Message = $"An unexpected error occurred: {ex.GetType()} - {ex.Message}";
+                }
+            }
+
+            return response;        }
+
+        public async Task<ResultService<string>> Delete_ProductAndImage(List<ProductImage> entity)
+        {
+            ResultService<string> resultService = new();
+            try
+            {
+                string Message = string.Empty;
+                using (var connection = new SqlConnection(_dapperConnectionString))
+                {
+                    await connection.OpenAsync();
+                    var param = new DynamicParameters();
+                    param.Add("@udtt_ProductImage", General.ConvertToDataTable(entity).AsTableValuedParameter("UDTT_ProductImage"));
+                    param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
+                    await connection.QueryAsync<Product_ProductImage_Dto>("ProductAndImage_Delete",
+                       param,
+                       commandType: CommandType.StoredProcedure,
+                       commandTimeout: TimeoutInSeconds);
+                    var resultMessage = param.Get<string>("@Message");
+                    if (resultMessage.Contains("OK"))
+                    {
+                        resultService.Code = "0"; // Success
+                        resultService.Message = "Deleted Successfully(BE)";
+                    }
+                    else
+                    {
+                        resultService.Code = "-999";
+                        resultService.Message = resultMessage ?? "Failed(BE)";
+                    }
                     return resultService;
                 }
             }
