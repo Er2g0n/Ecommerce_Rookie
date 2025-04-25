@@ -11,15 +11,16 @@ public class AuthService : IAuthService
 {
     private readonly AppDbContext _db;
     private readonly UserManager<ApplicationUser> _userManager;
-    //private readonly RoleManager<IdentityRole> _roleManager;
-    //private readonly IJwtTokenGenerator _jwtTokenGenerator;
-    public AuthService(AppDbContext db,
-    UserManager<ApplicationUser> userManager)
+    private readonly RoleManager<IdentityRole> _roleManager;
+    private readonly IJwtTokenGenerator _jwtTokenGenerator;
+
+    public AuthService(AppDbContext db, IJwtTokenGenerator jwtTokenGenerator,
+               UserManager<ApplicationUser> userManager, RoleManager<IdentityRole> roleManager)
     {
         _db = db;
-
         _userManager = userManager;
-        //_roleManager = roleManager;
+        _roleManager = roleManager;
+        _jwtTokenGenerator = jwtTokenGenerator;
     }
 
     public Task<bool> AssignRole(string email, string roleName)
@@ -36,7 +37,10 @@ public class AuthService : IAuthService
         {
             return new LoginResponseDto() { User = null, Token = "" };
         }
+
         // if user was found, generate jwt a token
+        var roles = await _userManager.GetRolesAsync(user);
+        var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
         UserDto userDTO = new()
         {
@@ -49,7 +53,7 @@ public class AuthService : IAuthService
         LoginResponseDto loginResponseDto = new LoginResponseDto()
         {
             User = userDTO,
-            Token = ""
+            Token = token
         };
 
         return loginResponseDto;
