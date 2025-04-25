@@ -60,18 +60,10 @@ builder.Services.AddTransient<IImageProvider, ImageProvider>();
 // Đăng ký dịch vụ CORS
 builder.Services.AddCors(options =>
 {
-    options.AddDefaultPolicy(policy =>
-    {
-        //policy.AllowAnyHeader()
-        //      .AllowAnyMethod()
-        //      .SetIsOriginAllowed((host) => true)
-        //      .AllowCredentials();
-
-        options.AddPolicy("CorsPolicy", policy =>
-                policy.WithOrigins(["*"])
-                      .AllowAnyMethod()
-                      .AllowAnyHeader());
-    });
+    options.AddPolicy("CorsPolicy", policy =>
+        policy.WithOrigins("http://localhost:5173") // Specify the frontend origin
+              .AllowAnyMethod()
+              .AllowAnyHeader());
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
