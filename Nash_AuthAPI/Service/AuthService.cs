@@ -3,6 +3,7 @@ using Nash_AuthAPI.Data;
 using Nash_AuthAPI.Models;
 using Nash_AuthAPI.Models.Dto;
 using Nash_AuthAPI.Service.IService;
+using Stripe;
 
 namespace Nash_AuthAPI.Service;
 
@@ -26,9 +27,32 @@ public class AuthService : IAuthService
         throw new NotImplementedException();
     }
 
-    public Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
+    public async Task<LoginResponseDto> Login(LoginRequestDto loginRequestDto)
     {
-        throw new NotImplementedException();
+        var user = _db.ApplicationUsers.FirstOrDefault(u=>u.UserName.ToLower()==loginRequestDto.UserName.ToLower());
+        bool isValid = await _userManager.CheckPasswordAsync(user, loginRequestDto.Password);
+
+        if (user == null || isValid == false)
+        {
+            return new LoginResponseDto() { User = null, Token = "" };
+        }
+        // if user was found, generate jwt a token
+
+        UserDto userDTO = new()
+        {
+            Email = user.Email,
+            ID = user.Id,
+            Name = user.Name,
+            PhoneNumber = user.PhoneNumber
+        };
+
+        LoginResponseDto loginResponseDto = new LoginResponseDto()
+        {
+            User = userDTO,
+            Token = ""
+        };
+
+        return loginResponseDto;
     }
 
     public async Task<string> Register(RegistrationRequestDto registrationRequestDto)

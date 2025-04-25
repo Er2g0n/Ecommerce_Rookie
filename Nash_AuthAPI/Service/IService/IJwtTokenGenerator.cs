@@ -1,9 +1,9 @@
-﻿//using Nash_AuthAPI.Models;
+﻿using Nash_AuthAPI.Models;
 
-//namespace Nash_AuthAPI.Service.IService;
+namespace Nash_AuthAPI.Service.IService;
 
-//public interface IJwtTokenGenerator
-//{
-//    string GenerateToken(ApplicationUser applicationUser, IEnumerable<string> roles);
+public interface IJwtTokenGenerator
+{
+    string GenerateToken(ApplicationUser applicationUser, IEnumerable<string> roles);
 
-//}
+}

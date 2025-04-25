@@ -33,22 +33,18 @@ public class AuthAPIController : Controller
         }
         //await _messageBus.PublishMessage(model.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
         return Ok(_response);
-        //return Ok();
     }
     [HttpPost("login")]
     public async Task<IActionResult> Login([FromBody] LoginRequestDto model)
     {
-        //var loginResponse = await _authService.Login(model);
-        //if (loginResponse.User == null)
-        //{
-        //_response.IsSuccess = false;
-        //_response.Message = "Username or password is incorrect";
-        //return BadRequest(_response);
-        //}
-        //_response.Result = loginResponse;
-        //return Ok(_response);
-        return Ok();
-
-
+        var loginResponse = await _authService.Login(model);
+        if (loginResponse.User == null)
+        {
+            _response.IsSuccess = false;
+            _response.Message = "Username or password is incorrect";
+            return BadRequest(_response);
+        }
+        _response.Result = loginResponse;
+        return Ok(_response);
     }
 }
