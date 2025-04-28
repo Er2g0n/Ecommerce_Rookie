@@ -1,0 +1,143 @@
+﻿@* Views/Shared/_CarouselPartial.cshtml *@
+
+<div id="carouselExampleDark" class="carousel carousel-dark slide h-60" data-bs-ride="carousel">
+    <div class="carousel-indicators">
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="0" class="active" aria-current="true" aria-label="Slide 1"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="1" aria-label="Slide 2"></button>
+        <button type="button" data-bs-target="#carouselExampleDark" data-bs-slide-to="2" aria-label="Slide 3"></button>
+    </div>
+    <div class="carousel-inner text-bg-light">
+        <div class="carousel-item active" data-bs-interval="10000">
+            <img src="~/images/carousel2.jpg" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+                <h5></h5>
+                <p></p>
+            </div>
+        </div>
+        <div class="carousel-item" data-bs-interval="2000">
+            <img src="~/images/carousel1.jpg" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+                <h4 class="text-light">Get A New Nighter</h4>
+                <p class="text-light">OUR ROAD. OUR RULE. LET'S' RIDE</p>
+            </div>
+        </div>
+        <div class="carousel-item">
+            <img src="~/images/carousel5.jpg" class="d-block w-100" alt="...">
+            <div class="carousel-caption d-none d-md-block">
+                <h5></h5>
+                <p></p>
+            </div>
+        </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Previous</span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleDark" data-bs-slide="next">
+        <span class="carousel-control-next-icon" aria-hidden="true"></span>
+        <span class="visually-hidden">Next</span>
+    </button>
+</div>
+<!-- Tabs Navigation -->
+<ul class="nav nav-tabs mb-4" id="productTab" role="tablist">
+    <li class="nav-item" role="presentation">
+        <button class="nav-link active" id="grand-touring-tab" data-bs-toggle="tab" data-bs-target="#grand-touring" type="button" role="tab">Grand American Touring</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="cruiser-tab" data-bs-toggle="tab" data-bs-target="#cruiser" type="button" role="tab">Cruiser</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="adventure-tab" data-bs-toggle="tab" data-bs-target="#adventure" type="button" role="tab">Adventure Touring</button>
+    </li>
+    <li class="nav-item" role="presentation">
+        <button class="nav-link" id="sport-tab" data-bs-toggle="tab" data-bs-target="#sport" type="button" role="tab">Sport</button>
+    </li>
+</ul>
+
+<!-- Tabs Content -->
+<div class="tab-content" id="productTabContent">
+    <!-- Grand Touring -->
+    <div class="tab-pane fade show active" id="grand-touring" role="tabpanel">
+        <div class="row g-4">
+            <!-- Bike 1 -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">Street Glide Ultra</h5>
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <img src="~/images/carousel5.jpg" class="d-block w-100" alt="...">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bike 2 -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">CVO Street Glide</h5>
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <img src="~/images/carousel5.jpg" class="d-block w-100" alt="...">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bike 3 -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">CVO Road Glide</h5>
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <img src="~/images/carousel5.jpg" class="d-block w-100" alt="...">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Bike 4 -->
+            <div class="col-md-3">
+                <div class="card">
+                    <div class="card-body text-center">
+                        <h5 class="card-title">CVO Road Glide ST</h5>
+                        <div class="d-flex justify-content-center gap-2 mt-2">
+                            <img src="~/images/carousel5.jpg" class="d-block w-100" alt="...">
+
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- View All Button -->
+        <div class="text-center mt-4">
+            <a href="#" class="btn btn-outline-dark">Discover All →</a>
+        </div>
+    </div>
+
+    <!-- Các tab khác (Cruiser, Adventure, Sport) bạn copy paste tương tự và đổi dữ liệu -->
+</div>
+<section class="py-5">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Text Content -->
+            <div class="col-md-6 mb-4 mb-md-0">
+                <h2 class="fw-bold text-uppercase">YOUR MOTORCYCLES, YOUR STYLE</h2>
+                <p>
+                    Personalize your ride with parts and accessories that match your style.
+                </p>
+                <a href="#" class="btn btn-dark btn-lg mt-3">
+                    Spare parts and accessories shopping →
+                </a>
+            </div>
+
+            <!-- Image Content -->
+            <div class="col-md-6">
+                <img src="~/images/image.jpg" alt="Harley Seat" class="img-fluid rounded">
+            </div>
+        </div>
+    </div>
+</section>

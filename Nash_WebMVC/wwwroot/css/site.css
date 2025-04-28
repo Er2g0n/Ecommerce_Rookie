@@ -1,4 +1,4 @@
-html {
+﻿html {
   font-size: 14px;
 }
 
@@ -19,4 +19,14 @@ html {
 
 body {
   margin-bottom: 60px;
+}
+
+/*.carousel-image {
+    height: 400px;  hoặc bạn chỉnh 300px, 350px tùy ý 
+    object-fit: cover;
+}*/
+.card:hover {
+    transform: translateY(-5px);
+    box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
+    transition: all 0.3s ease;
 }
