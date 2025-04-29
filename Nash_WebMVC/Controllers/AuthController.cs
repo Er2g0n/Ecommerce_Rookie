@@ -25,6 +25,9 @@ public class AuthController : Controller
     {
         return View();
     }
-
+    public IActionResult Logout()
+    {
+        return View();
+    }
 
 }
