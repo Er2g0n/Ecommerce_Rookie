@@ -25,6 +25,7 @@ public class BrandController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var rs = await _ICRUD_Service.GetAll();
+
         return rs == null ? BadRequest("No brands found") : Ok(rs);
     }
 
@@ -36,24 +37,6 @@ public class BrandController : ControllerBase
         var rs = await _ICRUD_Service.Get(id);
         return rs == null ? NotFound($"Brand with ID {id} not found") : Ok(rs);
     }
-
-    //[HttpPost]
-    //[Consumes("application/json")]
-    //[Produces("application/json")]
-    //public async Task<IActionResult> Create([FromBody] Brand brand)
-    //{
-    //    var rs = await _ICRUD_Service.Create(brand);
-    //    return rs == null ? BadRequest("Failed to create brand") : Ok(rs);
-    //}
-
-    //[HttpPut]
-    //[Consumes("application/json")]
-    //[Produces("application/json")]
-    //public async Task<IActionResult> Update([FromBody] Brand brand)
-    //{
-    //    var rs = await _ICRUD_Service.Update(brand);
-    //    return rs == null ? BadRequest("Failed to update brand") : Ok(rs);
-    //}
 
     [HttpDelete]
     [Consumes("application/json")]

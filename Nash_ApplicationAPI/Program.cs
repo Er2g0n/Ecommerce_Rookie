@@ -54,7 +54,9 @@ builder.Services.AddTransient<ICRUD_Service<UnitOfMeasure, int>, UnitOfMeasurePr
 builder.Services.AddTransient<IProductProvider, ProductProvider>();
 builder.Services.AddTransient<ICRUD_Service<Product, int>, ProductProvider>();
 //Image
-builder.Services.AddTransient<IImageProvider, ImageProvider>();
+builder.Services.AddTransient<IImageProvider, CloudinaryImageProvider>();
+builder.Services.AddTransient<IProductImageProvider, ProductImageProvider>();
+
 #endregion
 
 // Đăng ký dịch vụ CORS

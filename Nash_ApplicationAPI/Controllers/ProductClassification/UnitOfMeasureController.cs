@@ -23,6 +23,7 @@ public class UnitOfMeasureController : ControllerBase
     public async Task<IActionResult> GetAll()
     {
         var rs = await _ICRUD_Service.GetAll();
+
         return rs == null ? BadRequest("No unit of measures found") : Ok(rs);
     }
 

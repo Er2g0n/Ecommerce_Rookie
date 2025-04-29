@@ -58,12 +58,10 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             return rs.Code == "0" ? Ok(rs) : NotFound($"Product with Code {productCode} not found");
         }
         [HttpGet("code/{productCode}/images")]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetProductAndImagesByCode(string productCode)
+        public async Task<IActionResult> GetImagesByProductCode(string productCode)
         {
-            var rs = await _productProvider.GetProductAndImageByCode(productCode);
-            return rs.Code == "0" ? Ok(rs) : NotFound($"Product with Code {productCode} not found");
+            var rs = await _productProvider.GetImagesByProductCode(productCode);
+            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
         }
         [HttpPost("SaveByDapper")]
         [Consumes("application/json")]
@@ -84,84 +82,111 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
         }
 
-        [HttpPost("SaveProductAndImage")]
-        [Consumes("multipart/form-data")]
-        [Produces("application/json")]
-        public async Task<IActionResult> SaveProductAndImage([FromForm] ProductDto productDto)
-        {
-            if (productDto == null)
-            {
-                return BadRequest("Invalid product data(BE)");
-            }
-            // Kiểm tra các trường bắt buộc tối thiểu
-            if (string.IsNullOrEmpty(productDto.ProductName))
-            {
-                return BadRequest("ProductName is required(BE)");
-            }
-            var entity = new Product_ProductImage_Dto
-            {
-                Products = new List<Product>
-                {
-                    new Product
-                    {
-                        ProductCode = productDto.ProductCode ?? string.Empty,
-                        ProductName = productDto.ProductName,
-                        Description = productDto.Description,
-                        CategoryCode = productDto.CategoryCode,
-                        BrandCode = productDto.BrandCode,
-                        UoMCode = productDto.UoMCode,
-                        CreatedDate = null, // Sẽ được SQL xử lý
-                        UpdatedDate = null  // Sẽ được SQL xử lý
-                    }
-                },
-                ProductImages = new List<ProductImage>()
-            };
-            // Upload hình ảnh lên Cloudinary nếu có
-            if (productDto.Images != null && productDto.Images.Any())
-            {
-                for (int i = 0; i < productDto.Images.Count; i++)
-                {
-                    var image = productDto.Images[i];
-                    var isPrimary = i == (productDto.PrimaryImageIndex ?? 0);
+        //[HttpPost("SaveProductAndImage")]
+        //[Consumes("multipart/form-data")]
+        //[Produces("application/json")]
+        //public async Task<IActionResult> SaveProductAndImage([FromForm] ProductDto productDto)
+        //{
+        //    if (productDto == null || string.IsNullOrWhiteSpace(productDto.ProductName))
+        //    {
+        //        return BadRequest("Invalid product data or ProductName is required");
+        //    }
 
-                    try
-                    {
-                        var path = await _imageProvider.UploadImageAsync(
-                            image,
-                            folderName: "products",
-                            fileName: $"{entity.Products[0].ProductCode ?? "TEMP"}_{Guid.NewGuid()}"
-                        );
+        //    if (productDto.Images == null || !productDto.Images.Any())
+        //    {
+        //        return BadRequest("At least one image is required");
+        //    }
 
-                        entity.ProductImages.Add(new ProductImage
-                        {
-                            RefProductCode = entity.Products[0].ProductCode ?? string.Empty,
-                            ImagePath = path,
-                            IsPrimary = isPrimary,
-                            CreatedDate = null, // Sẽ được SQL xử lý
-                            UpdatedDate = null  // Sẽ được SQL xử lý
-                        });
+        //    if (productDto.IsPrimary.HasValue &&
+        //        (productDto.IsPrimary < 0 || productDto.IsPrimary >= productDto.Images.Count))
+        //    {
+        //        return BadRequest("Invalid PrimaryImageIndex(BE)");
+        //    }
 
-                        if (isPrimary)
-                        {
-                            entity.Products[0].ProductImageUrl = path;
-                        }
-                    }
-                    catch (Exception ex)
-                    {
-                        foreach (var uploadedImage in entity.ProductImages)
-                        {
-                            await _imageProvider.RemoveImageAsync(uploadedImage.ImagePath);
-                        }
-                        return BadRequest($"Failed to upload image(BE): {ex.Message}");
-                    }
-                }
-            }
+        //    var entity = new Product_ProductImage_Dto
+        //    {
+        //        CreatedBy = "system", // Sau này thay bằng user thực tế
+        //        Products = new List<Product>
+        //{
+        //    new Product
+        //    {
+        //        ProductCode = productDto.ProductCode ?? Guid.NewGuid().ToString("N"),
+        //        ProductName = productDto.ProductName,
+        //        Description = productDto.Description,
+        //        CategoryCode = productDto.CategoryCode,
+        //        BrandCode = productDto.BrandCode,
+        //        UoMCode = productDto.UoMCode
+        //    }
+        //},
+        //        ProductImages = new List<ProductImage>()
+        //    };
 
-            var rs = await _productProvider.SaveProductAndImage(entity);
-            return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
-        }
-    
-    [HttpDelete("Delete_ProductAndImage")]
+        //    var uploadedImagePaths = new List<string>();
+
+        //    try
+        //    {
+        //        for (int i = 0; i < productDto.Images.Count; i++)
+        //        {
+        //            var image = productDto.Images[i];
+        //            var isPrimary = i == (productDto.IsPrimary ?? 0);
+
+        //            var path = await _imageProvider.UploadImageAsync(
+        //                image,
+        //                folderName: "products",
+        //                fileName: $"{entity.Products[0].ProductCode}_{Guid.NewGuid()}"
+        //            );
+
+        //            uploadedImagePaths.Add(path);
+
+        //            entity.ProductImages.Add(new ProductImage
+        //            {
+        //                RefProductCode = entity.Products[0].ProductCode,
+        //                Position = i,
+        //                ImagePath = path,
+        //                IsPrimary = isPrimary
+        //            });
+        //        }
+
+        //        // Upload xong hết mới Save database
+        //        var rs = await _productProvider.SaveProductAndImage(entity);
+
+        //        if (rs.Code != "0")
+        //        {
+        //            // Lưu thất bại → rollback hình ảnh
+        //            foreach (var path in uploadedImagePaths)
+        //            {
+        //                await _imageProvider.RemoveImageAsync(path);
+        //            }
+        //            return BadRequest(rs.Message);
+        //        }
+
+        //        return Ok(rs);
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        try
+        //        {
+        //            if (entity.Products?.Any() == true)
+        //            {
+        //                await _productProvider.DeleteByDapper(entity.Products[0].ProductCode);
+        //            }
+
+        //            foreach (var path in uploadedImagePaths)
+        //            {
+        //                await _imageProvider.RemoveImageAsync(path);
+        //            }
+        //        }
+        //        catch
+        //        {
+        //            // Không throw exception phụ khi rollback
+        //        }
+
+        //        return BadRequest($"Failed to upload images(BE): {ex.Message}");
+        //    }
+        //}
+
+
+        [HttpDelete("Delete_ProductAndImage")]
         [Consumes("application/json")]
         [Produces("application/json")]
         public async Task<IActionResult> Delete_ProductAndImage([FromBody] List<ProductImage> productImages)
