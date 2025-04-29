@@ -30,10 +30,7 @@ public class DB_ProductManagement_Context : DbContext
             .Property(c => c.ProductName)
             .IsRequired()
             .HasMaxLength(100);
-        modelBuilder.Entity<Product>()
-            .Property(c => c.ProductImageUrl)
-            .IsRequired()
-            .HasMaxLength(100);
+        
         modelBuilder.Entity<Product>()
             .Property(c => c.CategoryCode)
             .IsRequired()
