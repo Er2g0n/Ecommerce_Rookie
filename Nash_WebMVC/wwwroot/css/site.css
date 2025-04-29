@@ -30,3 +30,10 @@ body {
     box-shadow: 0 10px 20px rgba(0, 0, 0, 0.2);
     transition: all 0.3s ease;
 }
+a.text-dark:hover {
+    color: #ff6600;
+}
+.no-bullet {
+    list-style: none;
+    padding-left: 0;
+}
