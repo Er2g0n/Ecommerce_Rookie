@@ -4,7 +4,8 @@ using Microsoft.Extensions.Configuration;
 using CloudinaryDotNet;
 using Structure_Base.ProductManagement;
 namespace Structure_Servicer.ProductManagement;
-public class ImageProvider : IImageProvider
+
+public class CloudinaryImageProvider : IImageProvider
 
 {
     private readonly Cloudinary _cloudinary;
@@ -17,7 +18,7 @@ public class ImageProvider : IImageProvider
         "image/webp"
     };
 
-    public ImageProvider(IConfiguration configuration)
+    public CloudinaryImageProvider(IConfiguration configuration)
     {
         var cloudinarySettings = configuration.GetSection("Cloudinary");
 
@@ -38,11 +39,7 @@ public class ImageProvider : IImageProvider
         if (!AllowImageContentTypes.Contains(file.ContentType))
             throw new ArgumentException($"File type {file.ContentType} is not supported.");
 
-        // If no filename specified, generate one
-        if (string.IsNullOrEmpty(fileName))
-        {
-            fileName = Guid.NewGuid().ToString();
-        }
+        fileName ??= Guid.NewGuid().ToString();
 
         // Prepare upload parameters
         var uploadParams = new ImageUploadParams
@@ -85,32 +82,25 @@ public class ImageProvider : IImageProvider
     public async Task<bool> RemoveImageAsync(string url)
     {
         if (string.IsNullOrEmpty(url))
-            throw new ArgumentException("URL must be provided.", nameof(url));
+            throw new ArgumentException("URL must be provided.");
 
-        // Extract public ID from Cloudinary URL
-        // Example URL: https://res.cloudinary.com/{cloud_name}/image/upload/v{version}/{public_id}
         try
         {
             var uri = new Uri(url);
             var pathSegments = uri.AbsolutePath.Split('/');
-
-            // Skip the first segments that include /image/upload/v{version}/ to get to public ID
-            // Find the index of the upload part
             int uploadIndex = Array.IndexOf(pathSegments, "upload");
             if (uploadIndex == -1 || uploadIndex + 2 >= pathSegments.Length)
-            {
-                throw new ArgumentException("URL does not match Cloudinary format.");
-            }
+                throw new ArgumentException("Invalid Cloudinary URL format.");
 
-            // Reconstruct the public ID by joining all segments after the version segment
-            var publicIdParts = pathSegments.Skip(uploadIndex + 2);
-            string publicId = string.Join("/", publicIdParts);
+            var publicId = string.Join("/", pathSegments.Skip(uploadIndex + 2));
+            var deleteParams = new DeletionParams(publicId);
+            var result = await _cloudinary.DestroyAsync(deleteParams);
 
-            return await DeleteImageByPublicIdAsync(publicId);
+            return result.Result == "ok";
         }
-        catch (Exception ex) when (!(ex is ArgumentException))
+        catch (Exception ex)
         {
-            throw new Exception($"Failed to parse Cloudinary URL: {ex.Message}", ex);
+            throw new Exception($"Error deleting image: {ex.Message}", ex);
         }
     }
 

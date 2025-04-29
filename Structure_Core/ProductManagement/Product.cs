@@ -11,7 +11,6 @@ public class Product : BaseClass.BaseClass
 {
     public string? ProductCode { get; set; }
     public string? ProductName { get; set; }
-    public string? ProductImageUrl { get; set; }
     public string? CategoryCode { get; set; }
     public string? BrandCode { get; set; }
     public string? UoMCode { get; set; }
@@ -34,7 +33,7 @@ public class ProductDto  // Để sử dụng cho việc truyền dữ liệu t�
     public string? UoMCode { get; set; }
 
     public List<IFormFile>? Images { get; set; } // Danh sách hình ảnh
-    public int? PrimaryImageIndex { get; set; } = 0; // Chỉ số của hình ảnh chính trong danh sách Images
+    public int? IsPrimary { get; set; } = 0; // Chỉ số của hình ảnh chính trong danh sách Images
 
 
 }
