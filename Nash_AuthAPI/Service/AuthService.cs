@@ -51,7 +51,7 @@ public class AuthService : IAuthService
 
         // if user was found, generate jwt a token
         var roles = await _userManager.GetRolesAsync(user);
-        var token = _jwtTokenGenerator.GenerateToken(user, roles);
+        //var token = _jwtTokenGenerator.GenerateToken(user, roles);
 
         UserDto userDTO = new()
         {
@@ -64,7 +64,7 @@ public class AuthService : IAuthService
         LoginResponseDto loginResponseDto = new LoginResponseDto()
         {
             User = userDTO,
-            Token = token
+            //Token = token
         };
 
         return loginResponseDto;

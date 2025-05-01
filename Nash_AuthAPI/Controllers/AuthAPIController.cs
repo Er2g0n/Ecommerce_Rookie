@@ -9,14 +9,11 @@ namespace Nash_AuthAPI.Controllers;
 public class AuthAPIController : Controller
 {
     private readonly IAuthService _authService;
-    //private readonly IMessageBus _messageBus;
-    //private readonly IConfiguration _configuration;
     protected ResponseDto _response;
     public AuthAPIController(IAuthService authService, IConfiguration configuration)
     {
         _authService = authService;
-        //_configuration = configuration;
-        //_messageBus = messageBus;
+
         _response = new();
     }
 
@@ -31,7 +28,6 @@ public class AuthAPIController : Controller
             _response.Message = errorMessage;
             return BadRequest(_response);
         }
-        //await _messageBus.PublishMessage(model.Email, _configuration.GetValue<string>("TopicAndQueueNames:RegisterUserQueue"));
         return Ok(_response);
     }
     [HttpPost("login")]

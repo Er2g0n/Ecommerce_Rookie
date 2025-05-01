@@ -7,7 +7,8 @@ namespace Nash_WebMVC.Service;
 public class AuthService : IAuthService
 {
     private readonly IBaseService _baseService;
-    public AuthService(IBaseService baseService)
+
+    public AuthService( IBaseService baseService)
     {
         _baseService = baseService;
     }
@@ -41,5 +42,4 @@ public class AuthService : IAuthService
             Url = SD.AuthAPIBase + "/api/auth/register"
         });
     }
-
 }
