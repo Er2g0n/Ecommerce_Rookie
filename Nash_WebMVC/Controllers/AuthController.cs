@@ -77,6 +77,10 @@ public class AuthController : Controller
                 TempData["success"] = "Registration Successful";
                 return RedirectToAction(nameof(Login));
             }
+        }else
+        {
+            TempData["error"] = result.Message;
+
         }
 
 
