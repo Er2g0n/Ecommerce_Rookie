@@ -63,10 +63,22 @@
                                 <i class="bi bi-cart" style="font-size: 1.8rem;"></i>
                             </a>
 
-                            <!-- User Icon -->
-                            <a class="text-dark" data-bs-toggle="offcanvas" href="#offcanvasLogin">
-                                <i class="bi bi-person-badge" style="font-size: 1.8rem;"></i>
-                            </a>
+                            @if (!User.Identity.IsAuthenticated)
+                            {
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Login">
+                                    <i class="bi bi-box-arrow-in-right" style="font-size: 1.8rem;"></i>
+                                </a>
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Register">
+                                    <i class="bi bi-r-circle" style="font-size: 1.8rem;"></i>
+                                </a>
+                            }
+                            else
+                            {
+                                <a class="nav-link text-dark" href="#">Hello @(User.Identity.Name ?? "User")</a>
+                                <a class="nav-link text-dark" asp-controller="Auth" asp-action="Logout">
+                                    <i class="bi bi-box-arrow-right" style="font-size: 1.8rem;"></i>
+                                </a>   
+                            }
                         </div>
                     </div>
                 </div>
@@ -99,52 +111,6 @@
 </body>
 </html>
 
-
-<!-- Offcanvas Login -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasLogin" aria-labelledby="offcanvasLoginLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title fw-bold" id="offcanvasLoginLabel">SIGN IN</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <form>
-            <div class="mb-3">
-                <label for="email" class="form-label">Email *</label>
-                <input type="email" class="form-control" id="email" placeholder="Email">
-            </div>
-
-            <div class="mb-3">
-                <label for="password" class="form-label">Password *</label>
-                <input type="password" class="form-control" id="password" placeholder="Password">
-            </div>
-
-            <div class="mb-3">
-                <a href="#" class="small text-decoration-underline">Forgot Password</a>
-            </div>
-
-            <button type="submit" class="btn btn-warning w-100 fw-bold">Sign In</button>
-            <ul class="no-bullet">
-                @if(!User.Identity.IsAuthenticated){
-                    <li class="text-center mt-3">
-                        <a class="text-dark text-decoration-underline fw-bold" asp-controller="Auth" asp-action="Login">Login →</a>
-
-                    </li>
-                    <li class="text-center mt-3">
-                        <a class="text-dark text-decoration-underline fw-bold" asp-controller="Auth" asp-action="Register">Register →</a>
-
-                    </li>
-
-                }
-                else{
-                    <li class="text-center mt-3">
-                        <a class="text-dark text-decoration-underline fw-bold" asp-controller="Auth" asp-action="Logout">Logout →</a>
-                    </li>
-                }
-            </ul>
-   
-        </form>
-    </div>
-</div>
 
 <!-- Offcanvas Cart -->
 <div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">

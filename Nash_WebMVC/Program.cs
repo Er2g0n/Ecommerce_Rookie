@@ -1,3 +1,4 @@
+using Microsoft.AspNetCore.Authentication.Cookies;
 using Nash_WebMVC.Service;
 using Nash_WebMVC.Service.IService;
 using Nash_WebMVC.Utility;
@@ -14,9 +15,17 @@ builder.Services.AddHttpClient<IAuthService, AuthService>();
 
 SD.AuthAPIBase = builder.Configuration["ServiceUrls:AuthAPI"];
 SD.ProductAPIBase = builder.Configuration["ServiceUrls:ProductAPI"];
-builder.Services.AddHttpClient<ITokenProvider, TokenProvider>();
+
+builder.Services.AddScoped<ITokenProvider, TokenProvider>();
 builder.Services.AddScoped<IBaseService, BaseService>();
 builder.Services.AddScoped<IAuthService, AuthService>();
+builder.Services.AddAuthentication(CookieAuthenticationDefaults.AuthenticationScheme)
+    .AddCookie(options =>
+    {
+        options.ExpireTimeSpan = TimeSpan.FromHours(10);
+        options.LoginPath = "/Auth/Login";
+        options.AccessDeniedPath = "/Auth/AccessDenied";
+    });
 
 
 var app = builder.Build();
@@ -34,6 +43,8 @@ app.UseStaticFiles();
 
 app.UseRouting();
 
+
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllerRoute(
