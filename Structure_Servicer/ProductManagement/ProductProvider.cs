@@ -190,35 +190,6 @@ namespace Structure_Servicer.ProductManagement
             return result;
         }
 
-        public async Task<ResultService<string>> DeleteByDapper(string code)
-        {
-            using var connection = new SqlConnection(_dapperConnectionString);
-            var result = new ResultService<string>();
-            try
-            {
-                await connection.OpenAsync();
-                var param = new DynamicParameters();
-                param.Add("@ProductCode", code);
-                param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
-
-                await connection.ExecuteAsync(
-                    "ProductAndImage_Delete",
-                    param,
-                    commandType: CommandType.StoredProcedure,
-                    commandTimeout: TimeoutInSeconds);
-
-                var message = param.Get<string>("@Message");
-                result.Code = message == "OK(SQL)" ? "0" : "-999";
-                result.Message = message == "OK(SQL)" ? "Deleted successfully" : message;
-                result.Data = "true";
-            }
-            catch (Exception ex)
-            {
-                result.Code = "999";
-                result.Message = $"Error: {ex.Message}";
-            }
-            return result;
-        }
 
         public async Task<ResultService<Product_ProductImage_Dto>> SaveProductAndImage(Product_ProductImage_Dto entity)
         {
@@ -286,93 +257,7 @@ namespace Structure_Servicer.ProductManagement
             return result;
         }
 
-        //public async Task<ResultService<Product_ProductImage_Dto>> GetProductAndImageByCode(string proCode)
-        //{
-        //    using var connection = new SqlConnection(_dapperConnectionString);
-        //    var result = new ResultService<Product_ProductImage_Dto>();
-        //    try
-        //    {
-        //        await connection.OpenAsync();
-        //        using var multi = await connection.QueryMultipleAsync(
-        //            "ProductAndImages_GetByCode",
-        //            new { ProductCode = proCode },
-        //            commandType: CommandType.StoredProcedure,
-        //            commandTimeout: TimeoutInSeconds);
-
-        //        var product = await multi.ReadSingleOrDefaultAsync<Product>();
-        //        var images = await multi.ReadAsync<ProductImage>();
-
-        //        if (product == null)
-        //        {
-        //            result.Code = "1";
-        //            result.Message = "Product not found";
-        //            return result;
-        //        }
-
-        //        result.Code = "0";
-        //        result.Message = "Retrieved successfully";
-        //        result.Data = new Product_ProductImage_Dto
-        //        {
-        //            Products = new List<Product> { product },
-        //            ProductImages = images?.ToList() ?? new List<ProductImage>(),
-        //            CreatedBy = product.CreatedBy
-        //        };
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Code = "999";
-        //        result.Message = $"Error: {ex.Message}";
-        //    }
-        //    return result;
-        //}
-
-        public async Task<ResultService<string>> Delete_ProductAndImage(List<ProductImage> productImages)
-        {
-            var result = new ResultService<string>();
-            if (productImages == null || !productImages.Any())
-            {
-                result.Code = "1";
-                result.Message = "Invalid image data";
-                return result;
-            }
-
-            try
-            {
-                var dtImages = General.ConvertToDataTable(productImages);
-                using var connection = new SqlConnection(_dapperConnectionString);
-                await connection.OpenAsync();
-                var param = new DynamicParameters();
-                param.Add("@udtt_ProductImage", dtImages.AsTableValuedParameter("UDTT_ProductImage"));
-                param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
-
-                await connection.ExecuteAsync(
-                    "ProductAndImage_Delete",
-                    param,
-                    commandType: CommandType.StoredProcedure,
-                    commandTimeout: TimeoutInSeconds);
-
-                var message = param.Get<string>("@Message");
-                result.Code = message == "OK(SQL)" ? "0" : "-999";
-                result.Message = message == "OK(SQL)" ? "Deleted successfully" : message;
-                result.Data = "true";
-
-                // Delete images from Cloudinary
-                foreach (var image in productImages)
-                {
-                    if (!string.IsNullOrEmpty(image.ImagePath))
-                    {
-                        await _imageProvider.RemoveImageAsync(image.ImagePath);
-                    }
-                }
-            }
-            catch (Exception ex)
-            {
-                result.Code = "999";
-                result.Message = $"Error: {ex.Message}";
-            }
-            return result;
-        }
-
+      
         public async Task<ResultService<IEnumerable<ProductImage>>> GetImagesByProductCode(string code)
         {
             using var connection = new SqlConnection(_dapperConnectionString);
@@ -397,6 +282,139 @@ namespace Structure_Servicer.ProductManagement
             }
             return result;
         }
+        public async Task<ResultService<string>> DeleteByDapper(string code)
+        {
+            using var connection = new SqlConnection(_dapperConnectionString);
+            var result = new ResultService<string>();
+            try
+            {
+                await connection.OpenAsync();
+                var param = new DynamicParameters();
+                param.Add("@ProductCode", code);
+                param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
+
+                await connection.ExecuteAsync(
+                    "ProductAndImage_Delete",
+                    param,
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: TimeoutInSeconds);
+
+                var message = param.Get<string>("@Message");
+                result.Code = message == "OK(SQL)" ? "0" : "-999";
+                result.Message = message == "OK(SQL)" ? "Deleted successfully" : message;
+                result.Data = "true";
+            }
+            catch (Exception ex)
+            {
+                result.Code = "999";
+                result.Message = $"Error: {ex.Message}";
+            }
+            return result;
+        }
+        public async Task<ResultService<string>> DeleteProductAndImageByProductCode(string productCode)
+        {
+            var result = new ResultService<string>();
+            if (string.IsNullOrEmpty(productCode))
+            {
+                result.Code = "1";
+                result.Message = "ProductCode is required";
+                return result;
+            }
+
+            try
+            {
+                // Step 1: Fetch the images associated with the product
+                var imageResult = await GetImagesByProductCode(productCode);
+                if (imageResult.Code != "0")
+                {
+                    result.Code = "1";
+                    result.Message = "Failed to fetch product images: " + imageResult.Message;
+                    return result;
+                }
+
+                var productImages = imageResult.Data?.ToList() ?? new List<ProductImage>();
+
+                // Step 2: Delete images from Cloudinary
+                foreach (var image in productImages)
+                {
+                    if (!string.IsNullOrEmpty(image.ImagePath))
+                    {
+                        await _imageProvider.RemoveImageAsync(image.ImagePath);
+                    }
+                }
+
+                // Step 3: Delete product and images from the database
+                using var connection = new SqlConnection(_dapperConnectionString);
+                await connection.OpenAsync();
+                var param = new DynamicParameters();
+                param.Add("@ProductCode", productCode);
+                param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
+
+                await connection.ExecuteAsync(
+                    "ProductAndImage_Delete",
+                    param,
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: TimeoutInSeconds);
+
+                var message = param.Get<string>("@Message");
+                result.Code = message == "OK(SQL)" ? "0" : "-999";
+                result.Message = message == "OK(SQL)" ? "Deleted successfully" : message;
+                result.Data = "true";
+            }
+            catch (Exception ex)
+            {
+                result.Code = "999";
+                result.Message = $"Error: {ex.Message}";
+            }
+            return result;
+        }
+        //public async Task<ResultService<string>> Delete_ProductAndImageByProductCode(List<ProductImage> productImages)
+        //{
+        //    var result = new ResultService<string>();
+        //    if (productImages == null || !productImages.Any())
+        //    {
+        //        result.Code = "1";
+        //        result.Message = "Invalid image data";
+        //        return result;
+        //    }
+
+        //    try
+        //    {
+        //        var dtImages = General.ConvertToDataTable(productImages);
+        //        using var connection = new SqlConnection(_dapperConnectionString);
+        //        await connection.OpenAsync();
+        //        var param = new DynamicParameters();
+        //        param.Add("@udtt_ProductImage", dtImages.AsTableValuedParameter("UDTT_ProductImage"));
+        //        param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
+
+        //        await connection.ExecuteAsync(
+        //            "ProductAndImage_Delete",
+        //            param,
+        //            commandType: CommandType.StoredProcedure,
+        //            commandTimeout: TimeoutInSeconds);
+
+        //        var message = param.Get<string>("@Message");
+        //        result.Code = message == "OK(SQL)" ? "0" : "-999";
+        //        result.Message = message == "OK(SQL)" ? "Deleted successfully" : message;
+        //        result.Data = "true";
+
+        //        // Delete images from Cloudinary
+        //        foreach (var image in productImages)
+        //        {
+        //            if (!string.IsNullOrEmpty(image.ImagePath))
+        //            {
+        //                await _imageProvider.RemoveImageAsync(image.ImagePath);
+        //            }
+        //        }
+        //    }
+        //    catch (Exception ex)
+        //    {
+        //        result.Code = "999";
+        //        result.Message = $"Error: {ex.Message}";
+        //    }
+        //    return result;
+        //}
+
 
     }
 }

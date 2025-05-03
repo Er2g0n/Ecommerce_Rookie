@@ -12,6 +12,8 @@ using static Dapper.SqlMapper;
 namespace Nash_ApplicationAPI.Controllers.ProductManagement;
 [Route("api/[controller]")]
 [ApiController]
+//[Authorize]
+
 public class ProductImageController : ControllerBase
 {
 

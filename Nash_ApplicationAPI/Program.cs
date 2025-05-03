@@ -8,6 +8,11 @@ using Structure_Base.ProductClassification;
 using Structure_Base.ProductManagement;
 using Structure_Context.ProductClassification;
 using Structure_Context.ProductManagement;
+using Microsoft.OpenApi.Models;
+using System.Text;
+using Microsoft.AspNetCore.Authentication.JwtBearer;
+using Microsoft.IdentityModel.Tokens;
+using Nash_ApplicationAPI.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -56,7 +61,9 @@ builder.Services.AddTransient<ICRUD_Service<Product, int>, ProductProvider>();
 //Image
 builder.Services.AddTransient<IImageProvider, CloudinaryImageProvider>();
 builder.Services.AddTransient<IProductImageProvider, ProductImageProvider>();
-
+//Price
+builder.Services.AddTransient<IPriceProvider, PriceProvider>();
+builder.Services.AddTransient<ICRUD_Service<Price, int>, PriceProvider>();
 #endregion
 
 // Đăng ký dịch vụ CORS
@@ -69,7 +76,39 @@ builder.Services.AddCors(options =>
 });
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
 builder.Services.AddEndpointsApiExplorer();
-builder.Services.AddSwaggerGen();
+
+//builder.Services.AddSwaggerGen();
+//------------------------------------------------------------
+//Add Authentication to Swagger GEN
+builder.Services.AddSwaggerGen(option =>
+{
+    option.AddSecurityDefinition(name: "Bearer", securityScheme: new OpenApiSecurityScheme
+    {
+        Name = "Authorization",
+        Description = "Enter the Bearer Authorization string as following: `Bearer Generated-JWT-Token`",
+        In = ParameterLocation.Header,
+        Type = SecuritySchemeType.ApiKey,
+        Scheme = "Bearer"
+    });
+    option.AddSecurityRequirement(new OpenApiSecurityRequirement
+    {
+        { new OpenApiSecurityScheme
+            {
+                Reference = new OpenApiReference
+                {
+                    Type = ReferenceType.SecurityScheme,
+                    Id = "Bearer"
+                }
+            },
+            new string[] {}
+        }
+    });
+});
+
+builder.AddAppAuthetication();
+
+builder.Services.AddAuthorization();
+//------------------------------------------------------------
 
 var app = builder.Build();
 
@@ -81,6 +120,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

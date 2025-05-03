@@ -6,6 +6,8 @@ using Structure_Base.ProductClassification;
 namespace Nash_ApplicationAPI.Controllers.ProductClassification;
 [Route("api/[controller]")]
 [ApiController]
+//[Authorize]
+
 public class UnitOfMeasureController : ControllerBase
 {
     private readonly ICRUD_Service<UnitOfMeasure, int> _ICRUD_Service;

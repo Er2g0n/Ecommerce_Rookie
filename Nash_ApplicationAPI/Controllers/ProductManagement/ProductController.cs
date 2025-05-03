@@ -9,6 +9,8 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
 {
     [Route("api/[controller]")]
     [ApiController]
+    //[Authorize]
+
     public class ProductController : ControllerBase
     {
         private readonly ICRUD_Service<Product, int> _ICRUD_Service;
@@ -186,16 +188,16 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
         //}
 
 
-        [HttpDelete("Delete_ProductAndImage")]
+        [HttpDelete("DeleteProductAndImage/{productCode}")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> Delete_ProductAndImage([FromBody] List<ProductImage> productImages)
+        public async Task<IActionResult> DeleteProductAndImage(string productCode)
         {
-            if (productImages == null || !productImages.Any())
+            if (string.IsNullOrEmpty(productCode))
             {
-                return BadRequest("Invalid product images data");
+                return BadRequest("ProductCode is required");
             }
-            var rs = await _productProvider.Delete_ProductAndImage(productImages);
+            var rs = await _productProvider.DeleteProductAndImageByProductCode(productCode);
             return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
         }
     }

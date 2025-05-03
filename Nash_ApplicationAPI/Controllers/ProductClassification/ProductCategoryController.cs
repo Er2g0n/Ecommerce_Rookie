@@ -7,6 +7,8 @@ namespace Nash_ApplicationAPI.Controllers.ProductClassification;
 
 [Route("api/[controller]")]
 [ApiController]
+//[Authorize]
+
 public class ProductCategoryController : ControllerBase
 {
     private readonly ICRUD_Service<ProductCategory, int> _ICRUD_Service;

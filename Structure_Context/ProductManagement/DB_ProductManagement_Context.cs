@@ -18,7 +18,7 @@ public class DB_ProductManagement_Context : DbContext
     }
     public DbSet<Product> Products { get; set; }
     public DbSet<ProductImage> ProductImages { get; set; }
-
+    public DbSet<Price> Prices{ get; set; }
     protected override void OnModelCreating(ModelBuilder modelBuilder)
     {
         //Product
@@ -47,6 +47,7 @@ public class DB_ProductManagement_Context : DbContext
             .Property(c => c.Description)
             .IsRequired()
             .HasMaxLength(100);
+
         //Product Image
         modelBuilder.Entity<ProductImage>()
             .Property(c => c.RefProductCode)
@@ -60,12 +61,36 @@ public class DB_ProductManagement_Context : DbContext
             .Property(c => c.IsPrimary)
             .IsRequired();
 
-        //// Thiết lập mối quan hệ
-        //modelBuilder.Entity<ProductImage>()
-        //    .HasOne<Product>()
-        //    .WithMany()
-        //    .HasForeignKey(p => p.ProductCode)
-        //    .HasPrincipalKey(p => p.ProductCode);
+        // Price
+        modelBuilder.Entity<Price>()
+            .Property(p => p.PriceCode)
+            .IsRequired()
+            .HasMaxLength(50);
+        modelBuilder.Entity<Price>()
+            .Property(p => p.ProductCode)
+            .IsRequired()
+            .HasMaxLength(50);
+        modelBuilder.Entity<Price>()
+            .Property(p => p.PriceCost)
+            .IsRequired(false);
+        modelBuilder.Entity<Price>()
+            .Property(p => p.PriceSale)
+            .IsRequired(false);
+        modelBuilder.Entity<Price>()
+            .Property(p => p.PriceVAT)
+            .IsRequired(false);
+        modelBuilder.Entity<Price>()
+            .Property(p => p.TotalAmount)
+            .IsRequired(false);
+        modelBuilder.Entity<Price>()
+            .Property(p => p.StartDate)
+            .IsRequired(false);
+        modelBuilder.Entity<Price>()
+            .Property(p => p.EndDate)
+            .IsRequired(false);
+        modelBuilder.Entity<Price>()
+            .Property(p => p.ApplyDate)
+            .IsRequired(false);
 
         base.OnModelCreating(modelBuilder);
     }

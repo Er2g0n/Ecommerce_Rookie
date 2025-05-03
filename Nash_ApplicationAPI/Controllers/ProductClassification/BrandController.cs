@@ -2,11 +2,13 @@
 using Structure_Base.BaseService;
 using Structure_Core.ProductClassification;
 using Structure_Base.ProductClassification;
+using Microsoft.AspNetCore.Authorization;
 
 namespace Nash_ApplicationAPI.Controllers.ProductClassification;
 
 [Route("api/[controller]")]
 [ApiController]
+//[Authorize]
 public class BrandController : ControllerBase
 {
     private readonly ICRUD_Service<Brand, int> _ICRUD_Service;
