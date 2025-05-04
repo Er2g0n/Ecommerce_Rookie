@@ -18,14 +18,16 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             _priceProvider = priceProvider;
         }
 
-        [HttpPost("save")]
-        public async Task<IActionResult> SavePrice([FromBody] Price price)
+ 
+        [HttpPost("createPrice")]
+        public async Task<IActionResult> CreatePrice([FromBody] Price price)
         {
-            var result = await _priceProvider.Save(price);
+            var result = await _priceProvider.CreatePrice(price);
             if (result.Code == "0")
                 return Ok(result);
             return BadRequest(result);
         }
+
 
         [HttpGet("GetByProductCode/{productCode}")]
         public async Task<IActionResult> GetPriceByProductCode(string productCode)
@@ -43,6 +45,14 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             if (result.Code == "0")
                 return Ok(result);
             return BadRequest(result);
+        }
+        [HttpGet("GetLatestPriceByProductCode/{productCode}")]
+        public async Task<IActionResult> GetLatestPriceByProductCode(string productCode)
+        {
+            var result = await _priceProvider.GetLatestPriceByProductCode(productCode);
+            if (result.Code == "0")
+                return Ok(result);
+            return NotFound(result);
         }
     }
 }

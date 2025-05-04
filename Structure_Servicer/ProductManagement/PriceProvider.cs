@@ -42,7 +42,53 @@ public class PriceProvider : ICRUD_Service<Price, int>, IPriceProvider
     {
         throw new NotImplementedException();
     }
-    public async Task<ResultService<Price>> Save(Price price)
+    //public async Task<ResultService<Price>> Save(Price price)
+    //{
+    //    var result = new ResultService<Price>();
+    //    if (price == null || string.IsNullOrEmpty(price.ProductCode))
+    //    {
+    //        result.Code = "1";
+    //        result.Message = "Invalid price or product code";
+    //        return result;
+    //    }
+
+    //    try
+    //    {
+    //        Console.WriteLine($"Saving price for ProductCode: {price.ProductCode}");
+    //        Console.WriteLine($"Price data: {Newtonsoft.Json.JsonConvert.SerializeObject(price)}");
+
+    //        price.PriceCode = string.IsNullOrEmpty(price.PriceCode) || !price.PriceCode.StartsWith("PRICE") ? "" : price.PriceCode;
+    //        var prices = new List<Price> { price };
+    //        var dtPrice = General.ConvertToDataTable(prices);
+
+    //        using var connection = new SqlConnection(_dapperConnectionString);
+    //        await connection.OpenAsync();
+    //        var param = new DynamicParameters();
+    //        param.Add("@CreatedBy", price.CreatedBy ?? "system");
+    //        param.Add("@udtt_Price", dtPrice.AsTableValuedParameter("UDTT_Price"));
+    //        param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
+
+    //        var savedPrice = await connection.QuerySingleOrDefaultAsync<Price>(
+    //            "Price_Save",
+    //            param,
+    //            commandType: CommandType.StoredProcedure,
+    //            commandTimeout: TimeoutInSeconds);
+
+    //        var message = param.Get<string>("@Message");
+    //        Console.WriteLine($"Price_Save result: Code={result.Code}, Message={message}");
+    //        result.Code = message.Contains("successfully") ? "0" : "-999";
+    //        result.Message = message.Contains("successfully") ? "Saved successfully" : message;
+    //        result.Data = savedPrice;
+    //    }
+    //    catch (Exception ex)
+    //    {
+    //        result.Code = "999";
+    //        result.Message = $"Error: {ex.Message}";
+    //        Console.WriteLine($"Error saving price: {ex.Message}");
+    //    }
+    //    return result;
+    //}
+    public async Task<ResultService<Price>> CreatePrice(Price price)
     {
         var result = new ResultService<Price>();
         if (price == null || string.IsNullOrEmpty(price.ProductCode))
@@ -54,7 +100,7 @@ public class PriceProvider : ICRUD_Service<Price, int>, IPriceProvider
 
         try
         {
-            Console.WriteLine($"Saving price for ProductCode: {price.ProductCode}");
+            Console.WriteLine($"Creating price for ProductCode: {price.ProductCode}");
             Console.WriteLine($"Price data: {Newtonsoft.Json.JsonConvert.SerializeObject(price)}");
 
             price.PriceCode = string.IsNullOrEmpty(price.PriceCode) || !price.PriceCode.StartsWith("PRICE") ? "" : price.PriceCode;
@@ -68,27 +114,26 @@ public class PriceProvider : ICRUD_Service<Price, int>, IPriceProvider
             param.Add("@udtt_Price", dtPrice.AsTableValuedParameter("UDTT_Price"));
             param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
 
-            var savedPrice = await connection.QuerySingleOrDefaultAsync<Price>(
-                "Price_Save",
+            var createdPrice = await connection.QuerySingleOrDefaultAsync<Price>(
+                "Price_Create",
                 param,
                 commandType: CommandType.StoredProcedure,
                 commandTimeout: TimeoutInSeconds);
 
             var message = param.Get<string>("@Message");
-            Console.WriteLine($"Price_Save result: Code={result.Code}, Message={message}");
+            Console.WriteLine($"Price_Create result: Code={result.Code}, Message={message}");
             result.Code = message.Contains("successfully") ? "0" : "-999";
-            result.Message = message.Contains("successfully") ? "Saved successfully" : message;
-            result.Data = savedPrice;
+            result.Message = message.Contains("successfully") ? "Created successfully" : message;
+            result.Data = createdPrice;
         }
         catch (Exception ex)
         {
             result.Code = "999";
             result.Message = $"Error: {ex.Message}";
-            Console.WriteLine($"Error saving price: {ex.Message}");
+            Console.WriteLine($"Error creating price: {ex.Message}");
         }
         return result;
     }
-
     public async Task<ResultService<Price>> GetByProductCode(string productCode)
     {
         var result = new ResultService<Price>();
@@ -120,6 +165,39 @@ public class PriceProvider : ICRUD_Service<Price, int>, IPriceProvider
         }
         return result;
     }
+
+    public async Task<ResultService<Price>> GetLatestPriceByProductCode(string productCode)
+    {
+        var result = new ResultService<Price>();
+        if (string.IsNullOrEmpty(productCode))
+        {
+            result.Code = "1";
+            result.Message = "Product code is required";
+            return result;
+        }
+
+        try
+        {
+            using var connection = new SqlConnection(_dapperConnectionString);
+            await connection.OpenAsync();
+            var price = await connection.QuerySingleOrDefaultAsync<Price>(
+                "LatestPrice_GetByProductCode",
+                new { ProductCode = productCode },
+                commandType: CommandType.StoredProcedure,
+                commandTimeout: TimeoutInSeconds);
+
+            result.Code = price == null ? "1" : "0";
+            result.Message = price == null ? "Price not found" : "Success";
+            result.Data = price;
+        }
+        catch (Exception ex)
+        {
+            result.Code = "999";
+            result.Message = $"Error: {ex.Message}";
+        }
+        return result;
+    }
+
 
     public async Task<ResultService<string>> Delete(string priceCode)
     {
@@ -157,10 +235,6 @@ public class PriceProvider : ICRUD_Service<Price, int>, IPriceProvider
         }
         return result;
     }
-
-
-
- 
 
 
 }

@@ -16,4 +16,5 @@ public class Price : BaseClass.BaseClass
     public DateTime? StartDate { get; set; }
     public DateTime? EndDate { get; set; }
     public DateTime? ApplyDate { get; set; }
+    public int PriceStatus { get; set; }
 }
