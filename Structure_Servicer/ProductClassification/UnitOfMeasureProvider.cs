@@ -281,7 +281,7 @@ public class UnitOfMeasureProvider : ICRUD_Service<UnitOfMeasure, int>
                 param.Add("@UoMCode", code);
                 param.Add("@Message", Message, dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
 
-                await connection.QueryAsync<UnitOfMeasure>("UnitOfMeasure_DeleteByCode",
+                await connection.QueryAsync<UnitOfMeasure>("UnitOfMeasure_Delete",
                    param,
                    commandType: CommandType.StoredProcedure,
                    commandTimeout: TimeoutInSeconds);
