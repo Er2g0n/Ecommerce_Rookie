@@ -6,7 +6,17 @@ using Nash_AuthAPI.Service;
 using Nash_AuthAPI.Service.IService;
 
 var builder = WebApplication.CreateBuilder(args);
-
+// Enable CORS
+builder.Services.AddCors(options =>
+{
+    options.AddPolicy("AllowReactApp", builder =>
+    {
+        builder.WithOrigins("http://localhost:5173") // Replace with your React app's URL
+               .AllowAnyHeader()
+               .AllowAnyMethod()
+               .AllowCredentials();
+    });
+});
 // Add services to the container.
 builder.Services.AddDbContext<AppDbContext>(options =>
 {
@@ -38,6 +48,8 @@ if (app.Environment.IsDevelopment())
 }
 
 app.UseHttpsRedirection();
+// Enable CORS
+app.UseCors("AllowReactApp");
 
 app.UseAuthentication(); 
 
