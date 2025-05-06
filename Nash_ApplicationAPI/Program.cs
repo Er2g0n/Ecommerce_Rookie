@@ -70,7 +70,11 @@ builder.Services.AddTransient<ICRUD_Service<Price, int>, PriceProvider>();
 builder.Services.AddCors(options =>
 {
     options.AddPolicy("CorsPolicy", policy =>
-        policy.WithOrigins("http://localhost:5173") // Specify the frontend origin
+        policy.WithOrigins(
+            "http://localhost:5173",            // Admin frontend
+            "https://localhost:7003",         // Nash_WebMVC HTTPS
+            "http://localhost:6003"           // Nash_WebMVC HTTP
+            ) 
               .AllowAnyMethod()
               .AllowAnyHeader());
 });
@@ -126,6 +130,7 @@ app.UseAuthentication();
 app.UseAuthorization();
 
 app.UseCors("CorsPolicy");
+
 app.MapControllers();
 
 app.Run();
