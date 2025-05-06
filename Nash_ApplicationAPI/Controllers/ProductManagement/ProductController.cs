@@ -33,6 +33,52 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             return rs == null ? BadRequest("No products found") : Ok(rs);
         }
 
+
+
+        [HttpGet("allWithFirstImage")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetAllProductsWithFirstImage()
+        {
+            var rs = await _productProvider.GetAllProductsWithFirstImage();
+            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
+        }
+
+
+
+        [HttpGet("byCategory/{categoryCode}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetAllProductsByCategoryCode(string categoryCode)
+        {
+            if (string.IsNullOrEmpty(categoryCode))
+            {
+                return BadRequest("CategoryCode is required");
+            }
+
+            var rs = await _productProvider.GetAllProductsByCategoryCode(categoryCode);
+            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
+        }
+
+        [HttpGet("byCategoryWithFirstImage/{categoryCode}")]
+        public async Task<IActionResult> GetProductsWithFirstImageByCategoryCode(string categoryCode)
+        {
+            if (string.IsNullOrEmpty(categoryCode))
+            {
+                return BadRequest("CategoryCode is required");
+            }
+
+            var rs = await _productProvider.GetProductsWithFirstImageByCategoryCode(categoryCode);
+            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
+        }
+
+
+
+        //----------------------------------------------------------
+
+
+
+
         [HttpGet("{id}")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -59,12 +105,14 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             var rs = await _productProvider.GetByCode(productCode);
             return rs.Code == "0" ? Ok(rs) : NotFound($"Product with Code {productCode} not found");
         }
+        
         [HttpGet("code/{productCode}/images")]
         public async Task<IActionResult> GetImagesByProductCode(string productCode)
         {
             var rs = await _productProvider.GetImagesByProductCode(productCode);
             return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
         }
+        
         [HttpPost("SaveByDapper")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -84,109 +132,6 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
         }
 
-        //[HttpPost("SaveProductAndImage")]
-        //[Consumes("multipart/form-data")]
-        //[Produces("application/json")]
-        //public async Task<IActionResult> SaveProductAndImage([FromForm] ProductDto productDto)
-        //{
-        //    if (productDto == null || string.IsNullOrWhiteSpace(productDto.ProductName))
-        //    {
-        //        return BadRequest("Invalid product data or ProductName is required");
-        //    }
-
-        //    if (productDto.Images == null || !productDto.Images.Any())
-        //    {
-        //        return BadRequest("At least one image is required");
-        //    }
-
-        //    if (productDto.IsPrimary.HasValue &&
-        //        (productDto.IsPrimary < 0 || productDto.IsPrimary >= productDto.Images.Count))
-        //    {
-        //        return BadRequest("Invalid PrimaryImageIndex(BE)");
-        //    }
-
-        //    var entity = new Product_ProductImage_Dto
-        //    {
-        //        CreatedBy = "system", // Sau này thay bằng user thực tế
-        //        Products = new List<Product>
-        //{
-        //    new Product
-        //    {
-        //        ProductCode = productDto.ProductCode ?? Guid.NewGuid().ToString("N"),
-        //        ProductName = productDto.ProductName,
-        //        Description = productDto.Description,
-        //        CategoryCode = productDto.CategoryCode,
-        //        BrandCode = productDto.BrandCode,
-        //        UoMCode = productDto.UoMCode
-        //    }
-        //},
-        //        ProductImages = new List<ProductImage>()
-        //    };
-
-        //    var uploadedImagePaths = new List<string>();
-
-        //    try
-        //    {
-        //        for (int i = 0; i < productDto.Images.Count; i++)
-        //        {
-        //            var image = productDto.Images[i];
-        //            var isPrimary = i == (productDto.IsPrimary ?? 0);
-
-        //            var path = await _imageProvider.UploadImageAsync(
-        //                image,
-        //                folderName: "products",
-        //                fileName: $"{entity.Products[0].ProductCode}_{Guid.NewGuid()}"
-        //            );
-
-        //            uploadedImagePaths.Add(path);
-
-        //            entity.ProductImages.Add(new ProductImage
-        //            {
-        //                RefProductCode = entity.Products[0].ProductCode,
-        //                Position = i,
-        //                ImagePath = path,
-        //                IsPrimary = isPrimary
-        //            });
-        //        }
-
-        //        // Upload xong hết mới Save database
-        //        var rs = await _productProvider.SaveProductAndImage(entity);
-
-        //        if (rs.Code != "0")
-        //        {
-        //            // Lưu thất bại → rollback hình ảnh
-        //            foreach (var path in uploadedImagePaths)
-        //            {
-        //                await _imageProvider.RemoveImageAsync(path);
-        //            }
-        //            return BadRequest(rs.Message);
-        //        }
-
-        //        return Ok(rs);
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        try
-        //        {
-        //            if (entity.Products?.Any() == true)
-        //            {
-        //                await _productProvider.DeleteByDapper(entity.Products[0].ProductCode);
-        //            }
-
-        //            foreach (var path in uploadedImagePaths)
-        //            {
-        //                await _imageProvider.RemoveImageAsync(path);
-        //            }
-        //        }
-        //        catch
-        //        {
-        //            // Không throw exception phụ khi rollback
-        //        }
-
-        //        return BadRequest($"Failed to upload images(BE): {ex.Message}");
-        //    }
-        //}
-
 
         [HttpDelete("DeleteProductAndImage/{productCode}")]
         [Consumes("application/json")]
@@ -200,5 +145,7 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             var rs = await _productProvider.DeleteProductAndImageByProductCode(productCode);
             return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
         }
+    
+    
     }
 }
