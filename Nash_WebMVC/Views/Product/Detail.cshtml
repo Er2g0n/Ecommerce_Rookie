@@ -1,0 +1,39 @@
+﻿@{
+    ViewData["Title"] = "Road Glide Special";
+}
+
+<section class="container py-5">
+    <div class="row">
+        <!-- Cột hình ảnh -->
+        <div class="col-md-6">
+            <!-- Ảnh chính -->
+            <img id="mainImage" src="~/images/motorcycle1.jpg" class="img-fluid rounded shadow mb-3" alt="Road Glide Special" />
+
+            <!-- Thumbnails -->
+            <div class="d-flex gap-2">
+                <img src="~/images/motorcycle1.jpg" class="img-thumbnail" style="width: 100px; cursor: pointer;" onclick="changeImage(this)">
+                <img src="~/images/motorcycle2.jpg" class="img-thumbnail" style="width: 100px; cursor: pointer;" onclick="changeImage(this)">
+                <img src="~/images/motorcycle3.jpg" class="img-thumbnail" style="width: 100px; cursor: pointer;" onclick="changeImage(this)">
+            </div>
+        </div>
+
+        <!-- Cột chi tiết -->
+        <div class="col-md-6">
+            <h1 class="fw-bold mb-3">Road Glide Special</h1>
+            <p><strong>Brand:</strong> Harley-Davidson</p>
+            <p><strong>Sale Price:</strong> <span class="text-danger fs-4">$32,499</span></p>
+
+            <hr class="my-4" />
+            <h5 class="fw-semibold">MÔ TẢ</h5>
+            <p>
+                The Road Glide Special combines aggressive styling with touring comfort. Featuring the iconic sharknose fairing, high-performance Milwaukee-Eight® engine, and stretched saddlebags – it's made for the long haul in style.
+            </p>
+        </div>
+    </div>
+</section>
+
+<script>
+    function changeImage(img) {
+        document.getElementById("mainImage").src = img.src;
+    }
+</script>

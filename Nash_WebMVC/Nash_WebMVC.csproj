@@ -16,6 +16,12 @@
 
 
 
+	<ItemGroup>
+	  <ProjectReference Include="..\Structure_Core\Structure_Core.csproj" />
+	</ItemGroup>
+
+
+
 
 
 </Project>

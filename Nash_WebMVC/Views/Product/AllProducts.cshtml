@@ -1,0 +1,36 @@
+﻿@model List<Structure_Core.ProductManagement.ProductsWithFirstImageDto>
+
+@{
+    ViewData["Title"] = "All Products - HaiHa Harley";
+}
+
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">All Products</h2>
+
+        @if (Model == null || !Model.Any())
+        {
+            <p class="text-center">No products found.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var product in Model)
+                {
+                    <div class="col-md-4">
+                        <a href="/Product/Detail/@product.ProductCode" class="text-decoration-none text-dark">
+                            <div class="card">
+                                <img src="@product.FirstImagePath" class="card-img-top" alt="@product.ProductName">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">@product.ProductName</h5>
+                                    <p><strong>Sale Price:</strong> <span class="text-danger fs-4">$@product.SalePrice</span></p>
+
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
