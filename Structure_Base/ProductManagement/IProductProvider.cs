@@ -13,6 +13,19 @@ public interface IProductProvider
     Task<ResultService<Product>> GetByCode(string proCode);
     Task<ResultService<string>> DeleteByDapper(string proCode);
     Task<ResultService<Product_ProductImage_Dto>> SaveProductAndImage(Product_ProductImage_Dto entity);
-    Task<ResultService<IEnumerable<ProductImage>>> GetImagesByProductCode(string proCode); // Cập nhật ở đây
-    Task<ResultService<string>> DeleteProductAndImageByProductCode(string proCode);// Updated signature}
+    Task<ResultService<IEnumerable<ProductImage>>> GetImagesByProductCode(string proCode); 
+    Task<ResultService<string>> DeleteProductAndImageByProductCode(string proCode);
+
+
+
+
+
+    Task<ResultService<List<Product>>> GetAllProductsByCategoryCode(string categoryCode);
+    Task<ResultService<List<(Product Product, string FirstImagePath)>>> GetProductsWithFirstImageByCategoryCode(string categoryCode);
+
+
+
+
+    Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImage();
+
 }

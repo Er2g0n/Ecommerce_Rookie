@@ -13,8 +13,8 @@ public class ProductImage : BaseClass.BaseClass
     public string? ImagePath { get; set; } 
     public bool? IsPrimary { get; set; }
 }
-public class ImageDto
-{
-    public ProductImage Properties { get; set; }
-    public IFormFile? File { get; set; }
-}
+//public class ImageDto
+//{
+//    public ProductImage Properties { get; set; }
+//    public IFormFile? File { get; set; }
+//}

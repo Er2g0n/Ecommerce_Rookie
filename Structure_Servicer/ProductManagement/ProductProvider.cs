@@ -190,7 +190,6 @@ namespace Structure_Servicer.ProductManagement
             return result;
         }
 
-
         public async Task<ResultService<Product_ProductImage_Dto>> SaveProductAndImage(Product_ProductImage_Dto entity)
         {
             var result = new ResultService<Product_ProductImage_Dto>();
@@ -256,8 +255,6 @@ namespace Structure_Servicer.ProductManagement
             }
             return result;
         }
-
-      
         public async Task<ResultService<IEnumerable<ProductImage>>> GetImagesByProductCode(string code)
         {
             using var connection = new SqlConnection(_dapperConnectionString);
@@ -266,7 +263,7 @@ namespace Structure_Servicer.ProductManagement
             {
                 await connection.OpenAsync();
                 var productImages = await connection.QueryAsync<ProductImage>(
-                    "ProductImages_GetByCode",
+                    "ProductImages_GetByProductCode",
                     new { RefProductCode = code },
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: TimeoutInSeconds);
@@ -368,52 +365,155 @@ namespace Structure_Servicer.ProductManagement
             }
             return result;
         }
-        //public async Task<ResultService<string>> Delete_ProductAndImageByProductCode(List<ProductImage> productImages)
-        //{
-        //    var result = new ResultService<string>();
-        //    if (productImages == null || !productImages.Any())
-        //    {
-        //        result.Code = "1";
-        //        result.Message = "Invalid image data";
-        //        return result;
-        //    }
 
-        //    try
-        //    {
-        //        var dtImages = General.ConvertToDataTable(productImages);
-        //        using var connection = new SqlConnection(_dapperConnectionString);
-        //        await connection.OpenAsync();
-        //        var param = new DynamicParameters();
-        //        param.Add("@udtt_ProductImage", dtImages.AsTableValuedParameter("UDTT_ProductImage"));
-        //        param.Add("@Message", dbType: DbType.String, direction: ParameterDirection.Output, size: 500);
+        public async Task<ResultService<List<Product>>> GetAllProductsByCategoryCode(string categoryCode)
+        {
+            if (string.IsNullOrEmpty(categoryCode))
+            {
+                return new ResultService<List<Product>>
+                {
+                    Code = "1",
+                    Message = "CategoryCode is required",
+                    Data = null
+                };
+            }
 
-        //        await connection.ExecuteAsync(
-        //            "ProductAndImage_Delete",
-        //            param,
-        //            commandType: CommandType.StoredProcedure,
-        //            commandTimeout: TimeoutInSeconds);
+            using var connection = new SqlConnection(_dapperConnectionString);
+            var result = new ResultService<List<Product>>();
 
-        //        var message = param.Get<string>("@Message");
-        //        result.Code = message == "OK(SQL)" ? "0" : "-999";
-        //        result.Message = message == "OK(SQL)" ? "Deleted successfully" : message;
-        //        result.Data = "true";
+            try
+            {
+                await connection.OpenAsync();
+                var products = await connection.QueryAsync<Product>(
+                    "Product_GetByCategoryCode",
+                    new { CategoryCode = categoryCode },
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: TimeoutInSeconds
+                );
 
-        //        // Delete images from Cloudinary
-        //        foreach (var image in productImages)
-        //        {
-        //            if (!string.IsNullOrEmpty(image.ImagePath))
-        //            {
-        //                await _imageProvider.RemoveImageAsync(image.ImagePath);
-        //            }
-        //        }
-        //    }
-        //    catch (Exception ex)
-        //    {
-        //        result.Code = "999";
-        //        result.Message = $"Error: {ex.Message}";
-        //    }
-        //    return result;
-        //}
+                var productList = products?.ToList() ?? new List<Product>();
+                result.Code = productList.Any() ? "0" : "1";
+                result.Message = productList.Any() ? "Success" : "No products found for this category";
+                result.Data = productList;
+            }
+            catch (Exception ex)
+            {
+                result.Code = "999";
+                result.Message = $"Error retrieving products: {ex.Message}";
+                result.Data = null;
+            }
+
+            return result;
+        }
+        public async Task<ResultService<List<(Product Product, string FirstImagePath)>>> GetProductsWithFirstImageByCategoryCode(string categoryCode)
+        {
+            if (string.IsNullOrEmpty(categoryCode))
+            {
+                return new ResultService<List<(Product Product, string FirstImagePath)>>
+                {
+                    Code = "1",
+                    Message = "CategoryCode is required",
+                    Data = null
+                };
+            }
+
+            using var connection = new SqlConnection(_dapperConnectionString);
+            var result = new ResultService<List<(Product Product, string FirstImagePath)>>();
+
+            try
+            {
+                await connection.OpenAsync();
+                var productsWithImages = await connection.QueryAsync<dynamic>(
+                    "ProductImages_GetByCategoryCode",
+                    new { CategoryCode = categoryCode },
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: TimeoutInSeconds
+                );
+
+                var resultList = new List<(Product Product, string FirstImagePath)>();
+                foreach (var item in productsWithImages)
+                {
+                    var product = new Product
+                    {
+                        ProductCode = item.ProductCode,
+                        ProductName = item.ProductName,
+                        CategoryCode = item.CategoryCode,
+                        BrandCode = item.BrandCode,
+                        UoMCode = item.UoMCode,
+                        Description = item.Description,
+                        ID = item.ProductID,
+                        CreatedBy = item.CreatedBy,
+                        CreatedDate = item.CreatedDate,
+                        UpdatedBy = item.UpdatedBy,
+                        UpdatedDate = item.UpdatedDate
+                    };
+                    string firstImagePath = item.FirstImagePath ?? "~/images/default-motorcycle.jpg";
+                    resultList.Add((product, firstImagePath));
+                }
+
+                result.Code = resultList.Any() ? "0" : "1";
+                result.Message = resultList.Any() ? "Success" : "No products found for this category";
+                result.Data = resultList;
+            }
+            catch (Exception ex)
+            {
+                result.Code = "999";
+                result.Message = $"Error retrieving products: {ex.Message}";
+                result.Data = null;
+            }
+
+            return result;
+        }
+
+
+        //Get All Products With First Image
+        public async Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImage()
+        {
+            using var connection = new SqlConnection(_dapperConnectionString);
+            var result = new ResultService<List<ProductsWithFirstImageDto>>();
+
+            try
+            {
+                await connection.OpenAsync();
+                var productsWithImages = await connection.QueryAsync<dynamic>(
+                    "ProductsWithFirstImage_GetAll",
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: TimeoutInSeconds
+                );
+
+                var resultList = new List<ProductsWithFirstImageDto>();
+
+                foreach (var item in productsWithImages)
+                {
+                    var product = new ProductsWithFirstImageDto
+                    {
+                        ProductCode = item.ProductCode,
+                        ProductName = item.ProductName,
+                        CategoryCode = item.CategoryCode,
+                        BrandCode = item.BrandCode,
+                        Description = item.Description,
+                        FirstImagePath = item.FirstImagePath,
+                        SalePrice = item.SalePrice
+
+                    };
+                    string firstImagePath = item.FirstImagePath ?? "~/images/default-motorcycle.jpg";
+                    resultList.Add(product);
+                }
+
+                result.Code = resultList.Any() ? "0" : "1";
+                result.Message = resultList.Any() ? "Success" : "No products found";
+                result.Data = resultList;
+            }
+            catch (Exception ex)
+            {
+                result.Code = "999";
+                result.Message = $"Error retrieving products: {ex.Message}";
+                result.Data = null;
+            }
+
+            return result;
+        }
+        //Get Product With All Image
 
 
     }

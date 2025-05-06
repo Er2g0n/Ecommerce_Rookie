@@ -12,4 +12,5 @@ public interface IBrandProvider
     Task<ResultService<Brand>> SaveByDapper(Brand entity);
     Task<ResultService<Brand>> GetByCode(string code);
     Task<ResultService<string>> DeleteByDapper(string code);
+
 }
