@@ -366,6 +366,105 @@ namespace Structure_Servicer.ProductManagement
             return result;
         }
 
+
+
+        //Get All Products With First Image
+        public async Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImage()
+        {
+            using var connection = new SqlConnection(_dapperConnectionString);
+            var result = new ResultService<List<ProductsWithFirstImageDto>>();
+
+            try
+            {
+                await connection.OpenAsync();
+                var productsWithImages = await connection.QueryAsync<dynamic>(
+                    "ProductsWithFirstImage_GetAll",
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: TimeoutInSeconds
+                );
+
+                var resultList = new List<ProductsWithFirstImageDto>();
+
+                foreach (var item in productsWithImages)
+                {
+                    var product = new ProductsWithFirstImageDto
+                    {
+                        ProductCode = item.ProductCode,
+                        ProductName = item.ProductName,
+                        CategoryCode = item.CategoryCode,
+                        BrandCode = item.BrandCode,
+                        Description = item.Description,
+                        FirstImagePath = item.FirstImagePath,
+                        SalePrice = item.SalePrice
+
+                    };
+                    string firstImagePath = item.FirstImagePath ?? "~/images/default-motorcycle.jpg";
+                    resultList.Add(product);
+                }
+
+                result.Code = resultList.Any() ? "0" : "1";
+                result.Message = resultList.Any() ? "Success" : "No products found";
+                result.Data = resultList;
+            }
+            catch (Exception ex)
+            {
+                result.Code = "999";
+                result.Message = $"Error retrieving products: {ex.Message}";
+                result.Data = null;
+            }
+
+            return result;
+        }
+        //Get Product With All Images
+        public async Task<ResultService<ProductWithAllImagesDto>> GetProductWithAllImagesByCode(string productCode)
+        {
+            using var connection = new SqlConnection(_dapperConnectionString);
+            var result = new ResultService<ProductWithAllImagesDto>();
+            try
+            {
+                await connection.OpenAsync();
+                using var multi = await connection.QueryMultipleAsync(
+                    "ProductWithAllImages_GetByCode",
+                    new { ProductCode = productCode },
+                    commandType: CommandType.StoredProcedure,
+                    commandTimeout: TimeoutInSeconds);
+
+                var productInfo = await multi.ReadSingleOrDefaultAsync<dynamic>();
+                var images = await multi.ReadAsync<ProductImageDto>();
+
+                if (productInfo == null)
+                {
+                    result.Code = "1";
+                    result.Message = "Product not found";
+                    return result;
+                }
+
+                var product = new ProductWithAllImagesDto
+                {
+                    ProductCode = productInfo.ProductCode,
+                    ProductName = productInfo.ProductName,
+                    BrandCode = productInfo.BrandCode,
+                    Description = productInfo.Description,
+                    LatestPrice = productInfo.LatestPrice,
+                    FirstImagePath = productInfo.FirstImagePath ?? "~/images/default-motorcycle.jpg",
+                    Images = images?.ToList() ?? new List<ProductImageDto>()
+                };
+
+
+                result.Code = "0";
+                result.Message = "Success";
+                result.Data = product;
+            }
+            catch (Exception ex)
+            {
+                result.Code = "999";
+                result.Message = $"Error: {ex.Message}";
+            }
+            return result;
+        }
+
+
+
         public async Task<ResultService<List<Product>>> GetAllProductsByCategoryCode(string categoryCode)
         {
             if (string.IsNullOrEmpty(categoryCode))
@@ -466,55 +565,6 @@ namespace Structure_Servicer.ProductManagement
         }
 
 
-        //Get All Products With First Image
-        public async Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImage()
-        {
-            using var connection = new SqlConnection(_dapperConnectionString);
-            var result = new ResultService<List<ProductsWithFirstImageDto>>();
-
-            try
-            {
-                await connection.OpenAsync();
-                var productsWithImages = await connection.QueryAsync<dynamic>(
-                    "ProductsWithFirstImage_GetAll",
-                    commandType: CommandType.StoredProcedure,
-                    commandTimeout: TimeoutInSeconds
-                );
-
-                var resultList = new List<ProductsWithFirstImageDto>();
-
-                foreach (var item in productsWithImages)
-                {
-                    var product = new ProductsWithFirstImageDto
-                    {
-                        ProductCode = item.ProductCode,
-                        ProductName = item.ProductName,
-                        CategoryCode = item.CategoryCode,
-                        BrandCode = item.BrandCode,
-                        Description = item.Description,
-                        FirstImagePath = item.FirstImagePath,
-                        SalePrice = item.SalePrice
-
-                    };
-                    string firstImagePath = item.FirstImagePath ?? "~/images/default-motorcycle.jpg";
-                    resultList.Add(product);
-                }
-
-                result.Code = resultList.Any() ? "0" : "1";
-                result.Message = resultList.Any() ? "Success" : "No products found";
-                result.Data = resultList;
-            }
-            catch (Exception ex)
-            {
-                result.Code = "999";
-                result.Message = $"Error retrieving products: {ex.Message}";
-                result.Data = null;
-            }
-
-            return result;
-        }
-        //Get Product With All Image
-
-
+    
     }
 }

@@ -27,5 +27,6 @@ public interface IProductProvider
 
 
     Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImage();
+    Task<ResultService<ProductWithAllImagesDto>> GetProductWithAllImagesByCode(string productCode);
 
 }

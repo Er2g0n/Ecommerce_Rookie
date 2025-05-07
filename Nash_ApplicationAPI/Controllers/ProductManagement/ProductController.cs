@@ -33,52 +33,6 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             return rs == null ? BadRequest("No products found") : Ok(rs);
         }
 
-
-
-        [HttpGet("allWithFirstImage")]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetAllProductsWithFirstImage()
-        {
-            var rs = await _productProvider.GetAllProductsWithFirstImage();
-            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
-        }
-
-
-
-        [HttpGet("byCategory/{categoryCode}")]
-        [Consumes("application/json")]
-        [Produces("application/json")]
-        public async Task<IActionResult> GetAllProductsByCategoryCode(string categoryCode)
-        {
-            if (string.IsNullOrEmpty(categoryCode))
-            {
-                return BadRequest("CategoryCode is required");
-            }
-
-            var rs = await _productProvider.GetAllProductsByCategoryCode(categoryCode);
-            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
-        }
-
-        [HttpGet("byCategoryWithFirstImage/{categoryCode}")]
-        public async Task<IActionResult> GetProductsWithFirstImageByCategoryCode(string categoryCode)
-        {
-            if (string.IsNullOrEmpty(categoryCode))
-            {
-                return BadRequest("CategoryCode is required");
-            }
-
-            var rs = await _productProvider.GetProductsWithFirstImageByCategoryCode(categoryCode);
-            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
-        }
-
-
-
-        //----------------------------------------------------------
-
-
-
-
         [HttpGet("{id}")]
         [Consumes("application/json")]
         [Produces("application/json")]
@@ -105,6 +59,7 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             var rs = await _productProvider.GetByCode(productCode);
             return rs.Code == "0" ? Ok(rs) : NotFound($"Product with Code {productCode} not found");
         }
+        
         
         [HttpGet("code/{productCode}/images")]
         public async Task<IActionResult> GetImagesByProductCode(string productCode)
@@ -145,7 +100,59 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             var rs = await _productProvider.DeleteProductAndImageByProductCode(productCode);
             return rs.Code == "0" ? Ok(rs) : BadRequest(rs);
         }
-    
-    
+
+
+
+
+        //----------------------For Client------------------
+  
+
+        [HttpGet("allWithFirstImage")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetAllProductsWithFirstImage()
+        {
+            var rs = await _productProvider.GetAllProductsWithFirstImage();
+            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
+        }
+
+        [HttpGet("code/{productCode}/details")]
+        public async Task<IActionResult> GetProductWithAllImagesByCode(string productCode)
+        {
+            var rs = await _productProvider.GetProductWithAllImagesByCode(productCode);
+            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
+        }
+
+        [HttpGet("byCategory/{categoryCode}")]
+        [Consumes("application/json")]
+        [Produces("application/json")]
+        public async Task<IActionResult> GetAllProductsByCategoryCode(string categoryCode)
+        {
+            if (string.IsNullOrEmpty(categoryCode))
+            {
+                return BadRequest("CategoryCode is required");
+            }
+
+            var rs = await _productProvider.GetAllProductsByCategoryCode(categoryCode);
+            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
+        }
+
+        [HttpGet("byCategoryWithFirstImage/{categoryCode}")]
+        public async Task<IActionResult> GetProductsWithFirstImageByCategoryCode(string categoryCode)
+        {
+            if (string.IsNullOrEmpty(categoryCode))
+            {
+                return BadRequest("CategoryCode is required");
+            }
+
+            var rs = await _productProvider.GetProductsWithFirstImageByCategoryCode(categoryCode);
+            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
+        }
+
+
+
+        //----------------------------------------------------------
+
+
     }
 }

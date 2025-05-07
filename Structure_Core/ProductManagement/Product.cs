@@ -23,12 +23,25 @@ public class Product_ProductImage_Dto
     public List<Product>? Products { get; set; }
     public List<ProductImage>? ProductImages{ get; set; }
 }
-
-public class ProductForClient
+// Get product With all images
+public class ProductWithAllImagesDto
 {
-    
+    public string ProductCode { get; set; }
+    public string ProductName { get; set; }
+    public string BrandCode { get; set; }
+    public string BrandName { get; set; }
+    public string Description { get; set; }
+    public decimal? LatestPrice { get; set; }
+    public string FirstImagePath { get; set; }
+    public List<ProductImageDto> Images { get; set; }
 }
 
+public class ProductImageDto
+{
+    public string ImagePath { get; set; }
+}
+
+//Get all products with first image
 public class ProductsWithFirstImageDto
 {
     public string ProductCode { get; set; }
