@@ -150,5 +150,19 @@ public class AuthService : IAuthService
         }
         return "Error Encountered";
     }
+
+    public async Task<List<UserDto>> GetAllUsers()
+    {
+        var users = _db.Users.Select(u => new UserDto
+        {
+            ID = u.Id,
+            Email = u.Email,
+            Name = u.UserName,
+            PhoneNumber = u.PhoneNumber
+        }).ToList();
+
+        return await Task.FromResult(users);
+    }
+
 }
 

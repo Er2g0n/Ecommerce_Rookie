@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.Mvc;
+﻿using Microsoft.AspNetCore.Authorization;
+using Microsoft.AspNetCore.Mvc;
 using Nash_AuthAPI.Models.Dto;
 using Nash_AuthAPI.Service.IService;
 
@@ -70,5 +71,15 @@ public class AuthAPIController : Controller
         }
         return Ok(_response);
 
+    }
+
+
+    [HttpGet("users")]
+    //[Authorize(Roles = "Admin")]
+    public async Task<IActionResult> GetUsers()
+    {
+        var users = await _authService.GetAllUsers();
+        _response.Result = users;
+        return Ok(_response);
     }
 }
