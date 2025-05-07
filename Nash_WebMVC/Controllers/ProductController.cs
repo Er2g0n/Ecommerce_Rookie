@@ -5,7 +5,7 @@ using Structure_Core.BaseClass;
 using Structure_Core.ProductManagement;
 
 namespace Nash_WebMVC.Controllers;
-
+//[Route("/Product")]
 public class ProductController : Controller
 {
     private readonly IProductService _productService;
@@ -15,12 +15,13 @@ public class ProductController : Controller
         _productService = productService;
     }
 
-
-    public async Task<IActionResult> Motorcycle()
+    //[HttpGet("Motorcyle")]
+    public IActionResult Motorcycle()
     {
         return View();
 
     }
+    //[HttpGet("Component")]
     public IActionResult Component()
     {
         return View();
@@ -30,15 +31,32 @@ public class ProductController : Controller
         var response = await _productService.GetAllProductsWithFirstImageAsync();
         if (response != null && response.Code == "0")
         {
-           
-                return View(response.Data);
+
+            return View(response.Data);
         }
         // Nếu không có dữ liệu, trả về danh sách rỗng hoặc view lỗi
         return View(new List<ProductsWithFirstImageDto>());
     }
-    public  IActionResult Detail()
+
+    public async Task<IActionResult> Detail(string code) //Bên Program đã đổi từ id thành code
     {
-        return View();
+        Console.WriteLine("ProductCode received: " + code);
+
+        if (string.IsNullOrEmpty(code))
+        {
+            return BadRequest("ProductCode is required");
+        }
+
+        var response = await _productService.GetProductWithAllImagesByCodeAsync(code);
+
+        // Nếu tìm thấy thì trả về view
+        if (response != null && response.Code == "0")
+        {
+            return View(response.Data); // response.Data có thể là Product_ProductImage_Dto
+        }
+
+        return NotFound("Product not found");
     }
+
 
 }

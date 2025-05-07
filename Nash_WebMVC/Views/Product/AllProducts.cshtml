@@ -20,11 +20,14 @@
                     <div class="col-md-4">
                         <a href="/Product/Detail/@product.ProductCode" class="text-decoration-none text-dark">
                             <div class="card">
-                                <img src="@product.FirstImagePath" class="card-img-top" alt="@product.ProductName">
+                                <!-- Ảnh được giới hạn chiều cao -->
+                                <img src="@product.FirstImagePath"
+                                     class="card-img-top"
+                                     alt="@product.ProductName"
+                                     style="height: 180px; object-fit: cover;" />
                                 <div class="card-body text-center">
-                                    <h5 class="card-title">@product.ProductName</h5>
-                                    <p><strong>Sale Price:</strong> <span class="text-danger fs-4">$@product.SalePrice</span></p>
-
+                                    <h6 class="card-title fw-bold">@product.ProductName</h6>
+                                    <p><strong>Sale Price:</strong> <span class="text-danger fs-6">$@product.SalePrice</span></p>
                                 </div>
                             </div>
                         </a>

@@ -1,34 +1,46 @@
-﻿@{
-    ViewData["Title"] = "Road Glide Special";
+﻿@model Structure_Core.ProductManagement.ProductWithAllImagesDto
+
+@{
+    ViewData["Title"] = Model.ProductName;
 }
 
-<section class="container py-5">
-    <div class="row">
+<section class="py-5">
+    <div class="container ">
+        <div class="row">
         <!-- Cột hình ảnh -->
         <div class="col-md-6">
             <!-- Ảnh chính -->
-            <img id="mainImage" src="~/images/motorcycle1.jpg" class="img-fluid rounded shadow mb-3" alt="Road Glide Special" />
+            <img id="mainImage" src="@Model.FirstImagePath" class="img-fluid rounded shadow mb-3 w-100" alt="@Model.ProductName" style="max-height: 400px; object-fit: cover;" />
 
             <!-- Thumbnails -->
-            <div class="d-flex gap-2">
-                <img src="~/images/motorcycle1.jpg" class="img-thumbnail" style="width: 100px; cursor: pointer;" onclick="changeImage(this)">
-                <img src="~/images/motorcycle2.jpg" class="img-thumbnail" style="width: 100px; cursor: pointer;" onclick="changeImage(this)">
-                <img src="~/images/motorcycle3.jpg" class="img-thumbnail" style="width: 100px; cursor: pointer;" onclick="changeImage(this)">
+            <div class="d-flex gap-2 flex-wrap">
+                @foreach (var image in Model.Images)
+                {
+                    <img src="@image.ImagePath" class="img-thumbnail" style="width: 80px; height: 80px; cursor: pointer; object-fit: cover;" onclick="changeImage(this)">
+                }
             </div>
         </div>
 
         <!-- Cột chi tiết -->
         <div class="col-md-6">
-            <h1 class="fw-bold mb-3">Road Glide Special</h1>
-            <p><strong>Brand:</strong> Harley-Davidson</p>
-            <p><strong>Sale Price:</strong> <span class="text-danger fs-4">$32,499</span></p>
+            <h1 class="fw-bold mb-3">@Model.ProductName</h1>
+            <p class="text-muted"><strong>Brand:</strong> @Model.BrandName</p>
+                <p><strong>Sale Price:</strong> <span class="text-danger fw-bold mb-3">$@Model.LatestPrice?.ToString("N2")</span></p>
 
             <hr class="my-4" />
-            <h5 class="fw-semibold">MÔ TẢ</h5>
-            <p>
-                The Road Glide Special combines aggressive styling with touring comfort. Featuring the iconic sharknose fairing, high-performance Milwaukee-Eight® engine, and stretched saddlebags – it's made for the long haul in style.
-            </p>
+            <h5 class="fw-semibold">Description</h5>
+            <p>@Model.Description</p>
+
+                <!-- Nút Add to Cart -->
+                <form method="post" action="/Cart/AddToCart">
+                    <input type="hidden" name="productId" value="12345" />
+                    <button type="submit" class="btn btn-dark btn-lg mt-3">
+                        <i class="bi bi-cart-plus"></i> Add to Cart
+                    </button>
+                </form>
         </div>
+    </div>
+
     </div>
 </section>
 

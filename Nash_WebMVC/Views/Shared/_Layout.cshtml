@@ -84,20 +84,15 @@
                 </div>
             </div>
         </nav>
-
-
-
-        
-
-         
     </header>
-    <div class="container">
+
+
+        @* Body *@
         <main role="main" class="pb-3">
             @RenderBody()
             <partial name="_Notifications" />
 
         </main>
-    </div>
 
     @* Footer *@
     @await Html.PartialAsync("_FooterPartial")

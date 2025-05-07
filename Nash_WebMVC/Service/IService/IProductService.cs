@@ -6,9 +6,9 @@ namespace Nash_WebMVC.Service.IService;
 
 public interface IProductService
 {
-    Task<ResponseDto?> GetAllProductsAsync();
-    Task<ResponseDto?> GetProductByCodeAsync(string proCode);
-    Task<ResponseDto?> GetImagesByProductCodeAsync(string productCode);
-    Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImageAsync();
 
+
+
+    Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImageAsync();
+    Task<ResultService<ProductWithAllImagesDto>> GetProductWithAllImagesByCodeAsync(string productCode);
 }
