@@ -444,6 +444,7 @@ namespace Structure_Servicer.ProductManagement
                     ProductCode = productInfo.ProductCode,
                     ProductName = productInfo.ProductName,
                     BrandCode = productInfo.BrandCode,
+                    BrandName = productInfo.BrandName,
                     Description = productInfo.Description,
                     LatestPrice = productInfo.LatestPrice,
                     FirstImagePath = productInfo.FirstImagePath ?? "~/images/default-motorcycle.jpg",
