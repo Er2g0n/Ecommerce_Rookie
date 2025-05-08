@@ -367,7 +367,8 @@ namespace Structure_Servicer.ProductManagement
         }
 
 
-
+        //Client
+        //---------------------------------------------
         //Get All Products With First Image
         public async Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImage()
         {
@@ -463,96 +464,47 @@ namespace Structure_Servicer.ProductManagement
             }
             return result;
         }
-
-
-
-        public async Task<ResultService<List<Product>>> GetAllProductsByCategoryCode(string categoryCode)
+        //Get Product With First Image By Brand Or Category Code
+        public async Task<ResultService<List<ProductsWithFirstImageDto>>> GetProductsWithFirstImageByBrandOrCategoryCode(string brandCode, string categoryCode)
         {
-            if (string.IsNullOrEmpty(categoryCode))
-            {
-                return new ResultService<List<Product>>
-                {
-                    Code = "1",
-                    Message = "CategoryCode is required",
-                    Data = null
-                };
-            }
-
             using var connection = new SqlConnection(_dapperConnectionString);
-            var result = new ResultService<List<Product>>();
-
-            try
-            {
-                await connection.OpenAsync();
-                var products = await connection.QueryAsync<Product>(
-                    "Product_GetByCategoryCode",
-                    new { CategoryCode = categoryCode },
-                    commandType: CommandType.StoredProcedure,
-                    commandTimeout: TimeoutInSeconds
-                );
-
-                var productList = products?.ToList() ?? new List<Product>();
-                result.Code = productList.Any() ? "0" : "1";
-                result.Message = productList.Any() ? "Success" : "No products found for this category";
-                result.Data = productList;
-            }
-            catch (Exception ex)
-            {
-                result.Code = "999";
-                result.Message = $"Error retrieving products: {ex.Message}";
-                result.Data = null;
-            }
-
-            return result;
-        }
-        public async Task<ResultService<List<(Product Product, string FirstImagePath)>>> GetProductsWithFirstImageByCategoryCode(string categoryCode)
-        {
-            if (string.IsNullOrEmpty(categoryCode))
-            {
-                return new ResultService<List<(Product Product, string FirstImagePath)>>
-                {
-                    Code = "1",
-                    Message = "CategoryCode is required",
-                    Data = null
-                };
-            }
-
-            using var connection = new SqlConnection(_dapperConnectionString);
-            var result = new ResultService<List<(Product Product, string FirstImagePath)>>();
+            var result = new ResultService<List<ProductsWithFirstImageDto>>();
 
             try
             {
                 await connection.OpenAsync();
                 var productsWithImages = await connection.QueryAsync<dynamic>(
-                    "ProductImages_GetByCategoryCode",
-                    new { CategoryCode = categoryCode },
+                    "ProductsWithFirstImage_GetByBrandOrCategoryCode",
+                    new
+                    {
+                        BrandCode = string.IsNullOrEmpty(brandCode) ? (string)null : brandCode,
+                        CategoryCode = string.IsNullOrEmpty(categoryCode) ? (string)null : categoryCode
+                    },
                     commandType: CommandType.StoredProcedure,
                     commandTimeout: TimeoutInSeconds
                 );
 
-                var resultList = new List<(Product Product, string FirstImagePath)>();
+                var resultList = new List<ProductsWithFirstImageDto>();
+
                 foreach (var item in productsWithImages)
                 {
-                    var product = new Product
+                    var product = new ProductsWithFirstImageDto
                     {
                         ProductCode = item.ProductCode,
                         ProductName = item.ProductName,
                         CategoryCode = item.CategoryCode,
+                        CategoryName = item.CategoryName,
                         BrandCode = item.BrandCode,
-                        UoMCode = item.UoMCode,
+                        BrandName = item.BrandName,
                         Description = item.Description,
-                        ID = item.ProductID,
-                        CreatedBy = item.CreatedBy,
-                        CreatedDate = item.CreatedDate,
-                        UpdatedBy = item.UpdatedBy,
-                        UpdatedDate = item.UpdatedDate
+                        FirstImagePath = item.FirstImagePath ?? "~/images/default-motorcycle.jpg",
+                        SalePrice = item.LatestPrice != null ? Convert.ToInt32(item.LatestPrice) : 0
                     };
-                    string firstImagePath = item.FirstImagePath ?? "~/images/default-motorcycle.jpg";
-                    resultList.Add((product, firstImagePath));
+                    resultList.Add(product);
                 }
 
                 result.Code = resultList.Any() ? "0" : "1";
-                result.Message = resultList.Any() ? "Success" : "No products found for this category";
+                result.Message = resultList.Any() ? "Success" : "No products found";
                 result.Data = resultList;
             }
             catch (Exception ex)
@@ -566,6 +518,9 @@ namespace Structure_Servicer.ProductManagement
         }
 
 
-    
+
+
+
+
     }
 }
