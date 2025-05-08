@@ -43,6 +43,7 @@ public class HomeController : Controller
         }
         return View();
     }
+
     public IActionResult Nav()
     {
         return View();

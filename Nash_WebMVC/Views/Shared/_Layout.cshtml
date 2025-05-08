@@ -12,8 +12,8 @@
 </head>
 <body>
     <header>
-        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3 ">
-            <div class="container-fluid ">
+        <nav class="navbar navbar-expand-sm navbar-toggleable-sm navbar-light bg-white border-bottom box-shadow mb-3">
+            <div class="container-fluid">
                 <a class="navbar-brand" asp-area="" asp-controller="Home" asp-action="Index">
                     <img src="~/images/Harley-Davidson-logo.jpg" alt="Nash_WebMVC" style="height: 40px;" />
                 </a>
@@ -62,9 +62,19 @@
 
                         <!-- Icon Group -->
                         <div class="d-flex align-items-center gap-3">
-                            <!-- Cart Icon -->
+                            <!-- Cart Icon with Badge -->
+                            @{
+                                var cart = Nash_WebMVC.Utility.CartHelper.GetCart(Context.Session);
+                                var cartItemCount = cart != null ? cart.Sum(item => item.Quantity) : 0;
+                            }
                             <a class="text-dark position-relative" data-bs-toggle="offcanvas" href="#offcanvasCart">
                                 <i class="bi bi-cart" style="font-size: 1.8rem;"></i>
+                                @if (cartItemCount > 0)
+                                {
+                                    <span id="cartItemCount" class="position-absolute top-0 start-100 translate-middle badge rounded-pill bg-danger">
+                                        @cartItemCount
+                                    </span>
+                                }
                             </a>
 
                             @if (!User.Identity.IsAuthenticated)
@@ -104,31 +114,9 @@
     <script src="~/lib/bootstrap/dist/js/bootstrap.bundle.min.js"></script>
     <script src="~/js/site.js" asp-append-version="true"></script>
     @await RenderSectionAsync("Scripts", required: false)
+
+
+    <!-- Offcanvas Cart -->
+    @await Html.PartialAsync("_CartPartial")
 </body>
 </html>
-
-<!-- Offcanvas Cart -->
-<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
-    <div class="offcanvas-header">
-        <h5 class="offcanvas-title fw-bold" id="offcanvasCartLabel">YOUR CART</h5>
-        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
-    </div>
-    <div class="offcanvas-body">
-        <!-- Đây là nơi bạn hiển thị thông tin sản phẩm trong giỏ -->
-        <div class="mb-3">
-            <div class="d-flex align-items-center mb-3">
-                <img src="~/images/component1.jpg" alt="Product" width="60" class="me-3 rounded">
-                <div>
-                    <h6 class="mb-1">Kahuna Heated Hand Grips</h6>
-                    <small class="text-muted">Quantity: 1</small><br />
-                    <small class="text-muted">Price: $150</small>
-                </div>
-            </div>
-            <!-- Thêm sản phẩm khác nếu có -->
-        </div>
-
-        <div class="mt-4">
-            <button class="btn btn-warning w-100 fw-bold">View Cart</button>
-        </div>
-    </div>
-</div>

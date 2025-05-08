@@ -1,0 +1,39 @@
+﻿@using Structure_Core.OrderManagement
+@using Nash_WebMVC.Utility
+
+@inject Microsoft.AspNetCore.Http.IHttpContextAccessor HttpContextAccessor
+
+@{
+    var cart = CartHelper.GetCart(HttpContextAccessor.HttpContext.Session);
+}
+
+<!-- Offcanvas Cart -->
+<div class="offcanvas offcanvas-end" tabindex="-1" id="offcanvasCart" aria-labelledby="offcanvasCartLabel">
+    <div class="offcanvas-header">
+        <h5 class="offcanvas-title fw-bold" id="offcanvasCartLabel">YOUR CART</h5>
+        <button type="button" class="btn-close text-reset" data-bs-dismiss="offcanvas" aria-label="Close"></button>
+    </div>
+    <div class="offcanvas-body">
+        @if (cart.Any())
+        {
+            foreach (var item in cart)
+            {
+                <div class="d-flex align-items-center mb-3">
+                    <img src="@item.ImagePath" alt="@item.ProductName" width="60" class="me-3 rounded" />
+                    <div>
+                        <h6 class="mb-1">@item.ProductName</h6>
+                        <small class="text-muted">Quantity: @item.Quantity</small><br />
+                        <small class="text-muted">Price: $@item.Price</small>
+                    </div>
+                </div>
+            }
+        }
+        else
+        {
+            <p>Your cart is empty.</p>
+        }
+        <div class="mt-4">
+            <a asp-controller="Order" asp-action="Cart" class="btn btn-warning w-100 fw-bold">View Cart</a>
+        </div>
+    </div>
+</div>

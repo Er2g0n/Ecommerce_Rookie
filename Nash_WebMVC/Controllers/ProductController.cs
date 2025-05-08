@@ -20,18 +20,7 @@ public class ProductController : Controller
         _brandService = brandService;
     }
 
-    public async Task<IActionResult> Motorcycle()
-    {
-        string categoryCode = "CAT0005"; // Thay bằng mã danh mục bên dưới db
-        var response = await _productService.GetProductsWithFirstImageByBrandOrCategoryCodeAsync(null, categoryCode);
-        return response != null && response.Code == "0"
-            ? View(response.Data)
-            : View(new List<ProductsWithFirstImageDto>());
-    }
-    public IActionResult Component()
-    {
-        return View();
-    }
+
 
     public async Task<IActionResult> AllProducts(string categoryCode = null, string brandCode = null)
     {

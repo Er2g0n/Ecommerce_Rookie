@@ -5,47 +5,89 @@
 }
 
 <section class="py-5">
-    <div class="container ">
+    <div class="container">
         <div class="row">
-        <!-- Cột hình ảnh -->
-        <div class="col-md-6">
-            <!-- Ảnh chính -->
-            <img id="mainImage" src="@Model.FirstImagePath" class="img-fluid rounded shadow mb-3 w-100" alt="@Model.ProductName" style="max-height: 400px; object-fit: cover;" />
-
-            <!-- Thumbnails -->
-            <div class="d-flex gap-2 flex-wrap">
-                @foreach (var image in Model.Images)
-                {
-                    <img src="@image.ImagePath" class="img-thumbnail" style="width: 80px; height: 80px; cursor: pointer; object-fit: cover;" onclick="changeImage(this)">
-                }
+            <!-- Cột hình ảnh -->
+            <div class="col-md-6">
+                <img id="mainImage" src="@Model.FirstImagePath" class="img-fluid rounded shadow mb-3 w-100" alt="@Model.ProductName" style="max-height: 400px; object-fit: cover;" />
+                <div class="d-flex gap-2 flex-wrap">
+                    @foreach (var image in Model.Images)
+                    {
+                        <img src="@image.ImagePath" class="img-thumbnail" style="width: 80px; height: 80px; cursor: pointer; object-fit: cover;" onclick="changeImage(this)">
+                    }
+                </div>
             </div>
-        </div>
 
-        <!-- Cột chi tiết -->
-        <div class="col-md-6">
-            <h1 class="fw-bold mb-3">@Model.ProductName</h1>
-            <p class="text-muted"><strong>Brand:</strong> @Model.BrandName</p>
+            <!-- Cột chi tiết -->
+            <div class="col-md-6">
+                <h1 class="fw-bold mb-3">@Model.ProductName</h1>
+                <p class="text-muted"><strong>Brand:</strong> @Model.BrandName</p>
                 <p><strong>Sale Price:</strong> <span class="text-danger fw-bold mb-3">$@Model.LatestPrice?.ToString("N2")</span></p>
 
-            <hr class="my-4" />
-            <h5 class="fw-semibold">Description</h5>
-            <p>@Model.Description</p>
+                <hr class="my-4" />
+                <h5 class="fw-semibold">Description</h5>
+                <p>@Model.Description</p>
 
                 <!-- Nút Add to Cart -->
-                <form method="post" action="/Cart/AddToCart">
-                    <input type="hidden" name="productId" value="12345" />
+                <form asp-controller="Cart" asp-action="AddToCart" method="post">
+                    <input type="hidden" name="productCode" value="@Model.ProductCode" />
+                    <div class="mb-3">
+                        <label for="quantity" class="form-label">Quantity:</label>
+                        <input type="number" name="quantity" id="quantity" class="form-control" value="1" min="1" style="width: 100px;" required />
+                    </div>
                     <button type="submit" class="btn btn-dark btn-lg mt-3">
                         <i class="bi bi-cart-plus"></i> Add to Cart
                     </button>
                 </form>
+            </div>
         </div>
-    </div>
 
+        <!-- Rating and Comment Section -->
+        <div class="row mt-5">
+            <div class="col-12">
+                <h3 class="fw-bold mb-4">Rate and Comment on this Product</h3>
+                <form method="post" action="/Product/SubmitReview">
+                    <input type="hidden" name="productCode" value="@Model.ProductCode" />
+                    <div class="mb-3">
+                        <label class="form-label fw-semibold">Your Rating:</label>
+                        <div class="d-flex gap-1 rating-stars" data-rating="0">
+                            <i class="bi bi-star" style="cursor: pointer; font-size: 1.5rem;" onclick="setRating(1)"></i>
+                            <i class="bi bi-star" style="cursor: pointer; font-size: 1.5rem;" onclick="setRating(2)"></i>
+                            <i class="bi bi-star" style="cursor: pointer; font-size: 1.5rem;" onclick="setRating(3)"></i>
+                            <i class="bi bi-star" style="cursor: pointer; font-size: 1.5rem;" onclick="setRating(4)"></i>
+                            <i class="bi bi-star" style="cursor: pointer; font-size: 1.5rem;" onclick="setRating(5)"></i>
+                            <input type="hidden" name="rating" id="ratingInput" value="0" />
+                        </div>
+                    </div>
+                    <div class="mb-3">
+                        <label for="commentTextarea" class="form-label fw-semibold">Your Comment:</label>
+                        <textarea class="form-control" id="commentTextarea" name="comment" rows="3" placeholder="Write your comment here..."></textarea>
+                    </div>
+                    <button type="submit" class="btn btn-primary">Submit Review</button>
+                </form>
+            </div>
+        </div>
     </div>
 </section>
 
 <script>
     function changeImage(img) {
         document.getElementById("mainImage").src = img.src;
+    }
+
+    function setRating(rating) {
+        const stars = document.querySelectorAll('.rating-stars i');
+        const ratingInput = document.getElementById('ratingInput');
+        ratingInput.value = rating;
+
+        stars.forEach((star, index) => {
+            if (index < rating) {
+                star.classList.remove('bi-star');
+                star.classList.add('bi-star-fill');
+            } else {
+                star.classList.remove('bi-star-fill');
+                star.classList.add('bi-star');
+            }
+        });
     }
 </script>

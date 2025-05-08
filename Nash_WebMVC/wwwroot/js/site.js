@@ -1,4 +1,17 @@
-﻿// Please see documentation at https://learn.microsoft.com/aspnet/core/client-side/bundling-and-minification
-// for details on configuring this project to bundle and minify static web assets.
+﻿$(document).ready(function () {
+    toastr.options = {
+        "positionClass": "toast-top-right",
+        "progressBar": true,
+        "timeOut": "3000"
+    };
 
-// Write your JavaScript code.
+    var successMessage = '@TempData["success"]';
+    if (successMessage) {
+        toastr.success(successMessage);
+    }
+
+    var errorMessage = '@TempData["error"]';
+    if (errorMessage) {
+        toastr.error(errorMessage);
+    }
+});
