@@ -18,15 +18,10 @@ public interface IProductProvider
 
 
 
-
-
-    Task<ResultService<List<Product>>> GetAllProductsByCategoryCode(string categoryCode);
-    Task<ResultService<List<(Product Product, string FirstImagePath)>>> GetProductsWithFirstImageByCategoryCode(string categoryCode);
-
-
-
-
+    //For CLient
     Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImage();
     Task<ResultService<ProductWithAllImagesDto>> GetProductWithAllImagesByCode(string productCode);
 
+
+    Task<ResultService<List<ProductsWithFirstImageDto>>> GetProductsWithFirstImageByBrandOrCategoryCode(string brandCode, string categoryCode);
 }
