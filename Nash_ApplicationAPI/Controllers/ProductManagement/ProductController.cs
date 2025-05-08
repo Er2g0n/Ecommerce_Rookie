@@ -123,32 +123,14 @@ namespace Nash_ApplicationAPI.Controllers.ProductManagement
             return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
         }
 
-        [HttpGet("byCategory/{categoryCode}")]
+        [HttpGet("filterByBrandOrCategory")]
         [Consumes("application/json")]
         [Produces("application/json")]
-        public async Task<IActionResult> GetAllProductsByCategoryCode(string categoryCode)
+        public async Task<IActionResult> FilterByBrandOrCategory([FromQuery] string brandCode = null, [FromQuery] string categoryCode = null)
         {
-            if (string.IsNullOrEmpty(categoryCode))
-            {
-                return BadRequest("CategoryCode is required");
-            }
-
-            var rs = await _productProvider.GetAllProductsByCategoryCode(categoryCode);
+            var rs = await _productProvider.GetProductsWithFirstImageByBrandOrCategoryCode(brandCode, categoryCode);
             return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
         }
-
-        [HttpGet("byCategoryWithFirstImage/{categoryCode}")]
-        public async Task<IActionResult> GetProductsWithFirstImageByCategoryCode(string categoryCode)
-        {
-            if (string.IsNullOrEmpty(categoryCode))
-            {
-                return BadRequest("CategoryCode is required");
-            }
-
-            var rs = await _productProvider.GetProductsWithFirstImageByCategoryCode(categoryCode);
-            return rs.Code == "0" ? Ok(rs) : NotFound(rs.Message);
-        }
-
 
 
         //----------------------------------------------------------
