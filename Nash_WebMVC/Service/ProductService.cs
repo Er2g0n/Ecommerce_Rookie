@@ -14,32 +14,7 @@ public class ProductService : IProductService
     {
         _baseService = baseService;
     }
-    //public async Task<ResponseDto?> GetAllProductsAsync()
-    //{
-    //    return await _baseService.SendAsync(new RequestDto()
-    //    {
-    //        ApiType = SD.ApiType.GET,
-    //        Url = SD.ProductAPIBase + "/api/product"
-    //    });
-    //}
-
-    //public async Task<ResponseDto?> GetProductByCodeAsync(string proCode)
-    //{
-    //    return await _baseService.SendAsync(new RequestDto()
-    //    {
-    //        ApiType = SD.ApiType.GET,
-    //        Url = SD.ProductAPIBase + "/api/product/code/" + proCode
-    //    });
-    //}
-
-    //public async Task<ResponseDto?> GetImagesByProductCodeAsync(string productCode)
-    //{
-    //    return await _baseService.SendAsync(new RequestDto()
-    //    {
-    //        ApiType = SD.ApiType.GET,
-    //        Url = SD.ProductAPIBase + "/api/product/code/" + productCode + "/images"
-    //    });
-    //}
+   
     public async Task<ResultService<List<ProductsWithFirstImageDto>>> GetAllProductsWithFirstImageAsync()
     {
         return await _baseService.SendAsync<List<ProductsWithFirstImageDto>> (new RequestDto()
@@ -54,6 +29,23 @@ public class ProductService : IProductService
         {
             ApiType = SD.ApiType.GET,
             Url = SD.ProductAPIBase + "/api/product/code/" + productCode + "/details"
+        });
+    }
+    public async Task<ResultService<List<ProductsWithFirstImageDto>>> GetProductsWithFirstImageByBrandOrCategoryCodeAsync(string brandCode, string categoryCode)
+    {
+        var query = string.Empty;
+        if (!string.IsNullOrEmpty(brandCode) || !string.IsNullOrEmpty(categoryCode))
+        {
+            var queryParams = new List<string>();
+            if (!string.IsNullOrEmpty(brandCode)) queryParams.Add($"brandCode={Uri.EscapeDataString(brandCode)}");
+            if (!string.IsNullOrEmpty(categoryCode)) queryParams.Add($"categoryCode={Uri.EscapeDataString(categoryCode)}");
+            query = "?" + string.Join("&", queryParams);
+        }
+
+        return await _baseService.SendAsync<List<ProductsWithFirstImageDto>>(new RequestDto()
+        {
+            ApiType = SD.ApiType.GET,
+            Url = SD.ProductAPIBase + "/api/product/filterByBrandOrCategory" + query
         });
     }
 }

@@ -2,42 +2,73 @@
 using Nash_WebMVC.Service.IService;
 using Newtonsoft.Json;
 using Structure_Core.BaseClass;
+using Structure_Core.ProductClassification;
 using Structure_Core.ProductManagement;
 
 namespace Nash_WebMVC.Controllers;
-//[Route("/Product")]
 public class ProductController : Controller
 {
     private readonly IProductService _productService;
+    private readonly IProductCategoryService _productCategoryService;
+    private readonly IBrandService _brandService;
 
-    public ProductController(IProductService productService)
+
+    public ProductController(IProductService productService, IProductCategoryService productCategoryService, IBrandService brandService)
     {
         _productService = productService;
+        _productCategoryService = productCategoryService;
+        _brandService = brandService;
     }
 
-    //[HttpGet("Motorcyle")]
-    public IActionResult Motorcycle()
+    public async Task<IActionResult> Motorcycle()
     {
-        return View();
-
+        string categoryCode = "CAT0005"; // Thay bằng mã danh mục bên dưới db
+        var response = await _productService.GetProductsWithFirstImageByBrandOrCategoryCodeAsync(null, categoryCode);
+        return response != null && response.Code == "0"
+            ? View(response.Data)
+            : View(new List<ProductsWithFirstImageDto>());
     }
-    //[HttpGet("Component")]
     public IActionResult Component()
     {
         return View();
     }
-    public async Task<IActionResult> AllProducts()
+
+    public async Task<IActionResult> AllProducts(string categoryCode = null, string brandCode = null)
     {
-        var response = await _productService.GetAllProductsWithFirstImageAsync();
-        if (response != null && response.Code == "0")
+        // Fetch categories
+        var categoriesResponse = await _productCategoryService.GetAllProductCategoriesAsync();
+        var categories = new List<ProductCategory>();
+        if (categoriesResponse != null && categoriesResponse.Code == "0" && categoriesResponse.Data != null)
         {
-
-            return View(response.Data);
+            categories = categoriesResponse.Data;
         }
-        // Nếu không có dữ liệu, trả về danh sách rỗng hoặc view lỗi
-        return View(new List<ProductsWithFirstImageDto>());
-    }
+        ViewBag.Categories = categories;
+        ViewBag.SelectedCategory = categoryCode;
 
+        // Fetch brands
+        var brandsResponse = await _brandService.GetAllBrandsAsync();
+        var brands = new List<Brand>();
+        if (brandsResponse != null && brandsResponse.Code == "0" && brandsResponse.Data != null)
+        {
+            brands = brandsResponse.Data;
+        }
+        ViewBag.Brands = brands;
+        ViewBag.SelectedBrand = brandCode;
+
+        // Fetch products (filtered if categoryCode or brandCode is provided)
+        ResultService<List<ProductsWithFirstImageDto>> response;
+        if (!string.IsNullOrEmpty(categoryCode) || !string.IsNullOrEmpty(brandCode))
+        {
+            response = await _productService.GetProductsWithFirstImageByBrandOrCategoryCodeAsync(brandCode, categoryCode);
+        }
+        else
+        {
+            response = await _productService.GetAllProductsWithFirstImageAsync();
+        }
+
+        var products = response != null && response.Code == "0" ? response.Data : new List<ProductsWithFirstImageDto>();
+        return View(products);
+    }
     public async Task<IActionResult> Detail(string code) //Bên Program đã đổi từ id thành code
     {
         Console.WriteLine("ProductCode received: " + code);

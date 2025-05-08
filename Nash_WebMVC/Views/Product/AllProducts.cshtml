@@ -4,6 +4,53 @@
     ViewData["Title"] = "All Products - HaiHa Harley";
 }
 
+<section class="py-4 bg-light">
+    <div class="container">
+        <div class="row align-items-center">
+            <!-- Left side: Dropdowns -->
+            <div class="col-md-8 d-flex align-items-center gap-3">
+                <div>
+                    <h6 class="fw-bold text-uppercase mb-2">EQUIPMENT</h6>
+                    <form method="get" action="@Url.Action("AllProducts", "Product")">
+                        <div class="d-flex gap-2">
+                            <!-- Category Dropdown -->
+                            <select name="categoryCode" class="form-select border-dark" style="width: 200px;">
+                                <option value="">All Categories</option>
+                                @foreach (var category in ViewBag.Categories)
+                                {
+                                    <option value="@category.CategoryCode" selected="@(category.CategoryCode == ViewBag.SelectedCategory ? "selected" : null)">
+                                        @category.CategoryName
+                                    </option>
+                                }
+                            </select>
+
+                            <!-- Brand Dropdown (Optional) -->
+                            <select name="brandCode" class="form-select border-dark" style="width: 200px;">
+                                <option value="">All Brands</option>
+                                @foreach (var brand in ViewBag.Brands)
+                                {
+                                    <option value="@brand.BrandCode" selected="@(brand.BrandCode == ViewBag.SelectedBrand ? "selected" : null)">
+                                        @brand.BrandName
+                                    </option>
+                                }
+                            </select>
+
+                            <button type="submit" class="btn btn-primary">Apply</button>
+                        </div>
+                    </form>
+                </div>
+            </div>
+
+            <!-- Right side: Login link -->
+            <div class="col-md-4 text-md-end text-center mt-3 mt-md-0">
+                <a class="text-dark fw-bold text-decoration-underline" data-bs-toggle="offcanvas" href="#offcanvasLogin" role="button" aria-controls="offcanvasLogin">
+                    Login to view saved vehicles
+                </a>
+            </div>
+        </div>
+    </div>
+</section>
+
 <section class="py-5">
     <div class="container">
         <h2 class="text-center fw-bold mb-5">All Products</h2>
@@ -20,7 +67,6 @@
                     <div class="col-md-4">
                         <a href="/Product/Detail/@product.ProductCode" class="text-decoration-none text-dark">
                             <div class="card">
-                                <!-- Ảnh được giới hạn chiều cao -->
                                 <img src="@product.FirstImagePath"
                                      class="card-img-top"
                                      alt="@product.ProductName"

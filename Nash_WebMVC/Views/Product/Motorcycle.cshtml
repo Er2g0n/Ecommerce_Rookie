@@ -1,51 +1,33 @@
-﻿
+﻿@model List<Structure_Core.ProductManagement.ProductsWithFirstImageDto>
 
 @{ 
      ViewData["Title"] = "Motorcycle - HaiHa Harley"; 
- } 
+ }
+<section class="py-5">
+    <div class="container">
+        <h2 class="text-center fw-bold mb-5">LINE Harley-Davidson</h2>
 
- <section class="py-5"> 
-    <div class="container"> 
-       <h2 class="text-center fw-bold mb-5">LINE Harley-Davidson</h2> 
-
-       <div class="row g-4"> 
-           <!-- Card 1 --> 
-             <div class="col-md-4"> 
-                 <a href="/Product/Detail/road-king-special" class="text-decoration-none text-dark"> 
-                     <div class="card"> 
-                         <img src="~/images/motorcycle1.jpg" class="card-img-top" alt="Road King Special"> 
-                         <div class="card-body text-center"> 
-                             <h5 class="card-title">Road King Special</h5> 
-                         </div> 
-                     </div> 
-                 </a> 
-             </div> 
-
-             <!-- Card 2 --> 
-             <div class="col-md-4"> 
-                 <a href="/Product/Detail/street-glide" class="text-decoration-none text-dark"> 
-                     <div class="card"> 
-                         <img src="~/images/motorcycle2.jpg" class="card-img-top" alt="Street Glide"> 
-                         <div class="card-body text-center"> 
-                             <h5 class="card-title">Street Glide</h5> 
-                         </div> 
-                     </div> 
-                 </a> 
-             </div> 
-
-             <!-- Card 3 --> 
-             <div class="col-md-4"> 
-                 <a href="/Product/Detail/road-glide" class="text-decoration-none text-dark"> 
-                     <div class="card"> 
-                        <img src="~/images/motorcycle3.jpg" class="card-img-top" alt="Road Glide"> 
-                         <div class="card-body text-center"> 
-                             <h5 class="card-title">Road Glide</h5> 
-                         </div> 
-                     </div> 
-                 </a> 
-             </div> 
-        
-        
-         </div> 
-     </div> 
- </section>
+        @if (Model == null || !Model.Any())
+        {
+            <p class="text-center">No motorcycles found.</p>
+        }
+        else
+        {
+            <div class="row g-4">
+                @foreach (var product in Model)
+                {
+                    <div class="col-md-4">
+                        <a href="/Product/Detail/@product.ProductCode" class="text-decoration-none text-dark">
+                            <div class="card">
+                                <img src="@product.FirstImagePath" class="card-img-top" alt="@product.ProductName">
+                                <div class="card-body text-center">
+                                    <h5 class="card-title">@product.ProductName</h5>
+                                </div>
+                            </div>
+                        </a>
+                    </div>
+                }
+            </div>
+        }
+    </div>
+</section>
