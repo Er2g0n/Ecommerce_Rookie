@@ -47,10 +47,13 @@ public class ProductsWithFirstImageDto
     public string ProductCode { get; set; }
     public string ProductName { get; set; }
     public string? CategoryCode { get; set; }
+    public string CategoryName { get; set; }
     public string? BrandCode { get; set; }
+    public string BrandName { get; set; }
     public string? Description { get; set; }
     public string FirstImagePath { get; set; }
     public int SalePrice { get; set; }  
-
 }
+
+
 
