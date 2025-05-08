@@ -16,7 +16,7 @@ public class CartController : Controller
     }
 
 
-    [HttpPost]
+    //[HttpPost]
     public async Task<IActionResult> AddToCart(string productCode, int quantity)
     {
         // Clear TempData to avoid lingering messages
@@ -48,6 +48,8 @@ public class CartController : Controller
         {
             ProductCode = product.ProductCode,
             ProductName = product.ProductName,
+            BrandCode = product.BrandCode,
+            BrandName = product.BrandName,
             ImagePath = product.FirstImagePath,
             Price = product.LatestPrice ?? 0,
             Quantity = quantity
@@ -73,16 +75,15 @@ public class CartController : Controller
         if (!cart.Any())
         {
             TempData["error"] = "Your cart is empty.";
-            return RedirectToAction("Cart", "Product");
+            return RedirectToAction("Cart", "Cart"); // Fixed redirect to self
         }
 
-        // TODO: Process the order (save to database, etc.)
-        CartHelper.ClearCart(HttpContext.Session);
+            // TODO: Process the order (save to database, etc.)
+            CartHelper.ClearCart(HttpContext.Session);
         TempData["success"] = "Order placed successfully!";
         return RedirectToAction("Index", "Home");
     }
 
-    [HttpGet]
     public IActionResult GetCartPartial()
     {
         var cart = CartHelper.GetCart(HttpContext.Session);

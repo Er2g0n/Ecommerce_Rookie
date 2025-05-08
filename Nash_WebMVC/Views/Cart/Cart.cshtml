@@ -1,0 +1,56 @@
+﻿@model List<Structure_Core.OrderManagement.OrderDetailDTO>
+
+@{
+    ViewData["Title"] = "Shopping Cart";
+}
+
+<div class="container mt-5">
+    <h2 class="mb-4">Your Shopping Cart</h2>
+
+    @if (Model != null && Model.Any())
+    {
+        <table class="table table-bordered table-striped">
+            <thead class="table-dark">
+                <tr>
+                    <th>Image</th>
+                    <th>Product</th>
+                    <th>Brand</th>
+                    <th>Price</th>
+                    <th>Quantity</th>
+                    <th>Total</th>
+                </tr>
+            </thead>
+            <tbody>
+                @foreach (var item in Model)
+                {
+                    <tr>
+                        <td>
+                            <img src="@item.ImagePath" alt="@item.ProductName" width="60" class="rounded" />
+                        </td>
+                        <td>@item.ProductName</td>
+                        <td>@item.BrandName</td>
+                        <td>$@item.Price.ToString("N2")</td>
+                        <td>@item.Quantity</td>
+                        <td>$@(item.Price * item.Quantity).ToString("N2")</td>
+                    </tr>
+                }
+            </tbody>
+            <tfoot>
+                <tr>
+                    <td colspan="5" class="text-end fw-bold">Grand Total:</td>
+                    <td class="fw-bold">$@Model.Sum(item => item.Price * item.Quantity).ToString("N2")</td>
+                </tr>
+            </tfoot>
+        </table>
+
+        <div class="d-flex justify-content-end mt-4">
+            <a asp-controller="Cart" asp-action="Checkout" class="btn btn-warning fw-bold">Proceed to Checkout</a>
+        </div>
+    }
+    else
+    {
+        <div class="alert alert-info" role="alert">
+            Your cart is empty. <a asp-controller="Product" asp-action="AllProducts" class="alert-link">Continue shopping</a>.
+        </div>
+    }
+</div>
