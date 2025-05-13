@@ -1,0 +1,6 @@
+@Nash_ApplicationAPI.Tests_HostAddress = http://localhost:5274
+
+GET {{Nash_ApplicationAPI.Tests_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
