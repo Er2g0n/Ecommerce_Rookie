@@ -16,7 +16,6 @@ public class CartController : Controller
     }
 
 
-    //[HttpPost]
     public async Task<IActionResult> AddToCart(string productCode, int quantity)
     {
         // Clear TempData to avoid lingering messages
@@ -63,7 +62,7 @@ public class CartController : Controller
         return View("~/Views/Product/Detail.cshtml", product);
     }
 
-    public IActionResult Cart()
+    public IActionResult Index()
     {
         var cart = CartHelper.GetCart(HttpContext.Session);
         return View(cart);

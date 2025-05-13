@@ -31,14 +31,14 @@
                         <td>@item.BrandName</td>
                         <td>$@item.Price.ToString("N2")</td>
                         <td>@item.Quantity</td>
-                        <td>$@(item.Price * item.Quantity).ToString("N2")</td>
+                        <td>$@(item.Price * item.Quantity)</td>
                     </tr>
                 }
             </tbody>
             <tfoot>
                 <tr>
                     <td colspan="5" class="text-end fw-bold">Grand Total:</td>
-                    <td class="fw-bold">$@Model.Sum(item => item.Price * item.Quantity).ToString("N2")</td>
+                    <td class="fw-bold">$@Model.Sum(item => item.Price * item.Quantity)</td>
                 </tr>
             </tfoot>
         </table>

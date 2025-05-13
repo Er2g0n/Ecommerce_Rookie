@@ -4,14 +4,14 @@
         "progressBar": true,
         "timeOut": "3000"
     };
+    var errorMessage = '@TempData["error"]';
+    if (errorMessage) {
+        toastr.error(errorMessage);
+    }
 
     var successMessage = '@TempData["success"]';
     if (successMessage) {
         toastr.success(successMessage);
     }
 
-    var errorMessage = '@TempData["error"]';
-    if (errorMessage) {
-        toastr.error(errorMessage);
-    }
 });

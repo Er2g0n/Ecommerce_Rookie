@@ -58,10 +58,18 @@ public class ProductController : Controller
         var products = response != null && response.Code == "0" ? response.Data : new List<ProductsWithFirstImageDto>();
         return View(products);
     }
-    public async Task<IActionResult> Detail(string code) //Bên Program đã đổi từ id thành code
+    public async Task<IActionResult> Detail(string code, string categoryCode = null) //Bên Program đã đổi từ id thành code
     {
         Console.WriteLine("ProductCode received: " + code);
-
+        // Fetch categories
+        var categoriesResponse = await _productCategoryService.GetAllProductCategoriesAsync();
+        var categories = new List<ProductCategory>();
+        if (categoriesResponse != null && categoriesResponse.Code == "0" && categoriesResponse.Data != null)
+        {
+            categories = categoriesResponse.Data;
+        }
+        ViewBag.Categories = categories;
+        ViewBag.SelectedCategory = categoryCode;
         if (string.IsNullOrEmpty(code))
         {
             return BadRequest("ProductCode is required");
